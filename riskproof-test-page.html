@@ -30,12 +30,13 @@
   .btn-text:hover{ color:var(--chocolate-60); }
 
   /* ================= HEADER (упрощённый — режим фокуса на тесте) ================= */
-  header{ padding:26px 0; border-bottom:1px solid var(--line); }
+  header{ position:sticky; top:0; z-index:50; padding:26px 0; border-bottom:1px solid var(--line); background:rgba(255,250,245,.94); backdrop-filter:blur(10px); }
   .header-inner{ max-width:760px; margin:0 auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; }
   .logo{ font-family:var(--serif); font-size:20px; font-weight:600; }
   .logo span{ color:var(--terracotta); }
   .exit-link{ font-size:13px; color:var(--chocolate-35); }
   .exit-link:hover{ color:var(--chocolate-60); }
+  .test-breadcrumb{ display:flex; align-items:center; gap:8px; min-width:0; font-size:13px; color:var(--chocolate-35); }
 
   /* ================= PROGRESS ================= */
   .progress-wrap{ padding:36px 0 0; }
@@ -83,7 +84,9 @@
   <header>
     <div class="header-inner">
       <div class="logo">Risk<span>Proof</span></div>
-      <a class="exit-link" href="#">Выйти из теста</a>
+      <div class="test-breadcrumb">
+        <a href="riskproof-concept.html">Главная</a><span>/</span><a class="exit-link" href="#">Выйти из теста</a>
+      </div>
     </div>
   </header>
 

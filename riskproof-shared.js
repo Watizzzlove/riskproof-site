@@ -6,13 +6,16 @@
   const data = window.RiskProofData && window.RiskProofData.directions;
   if (!data) return;
 
+  const legacyService = params.get('service') || '';
+  const legacyDirection = legacyService.startsWith('course_') ? legacyService.replace('course_', '') : '';
+
   const byFile = {
     'riskproof-podrostok-page.html': 'podrostok',
     'riskproof-ustoichivost-page.html': 'ustoichivost',
     'riskproof-finance-page.html': 'finance',
     'riskproof-proforientation-page.html': 'proforientation'
   };
-  const direction = params.get('direction') || params.get('type') || byFile[file] || 'podrostok';
+  const direction = params.get('direction') || legacyDirection || byFile[file] || 'podrostok';
   const directionData = data[direction] || data.podrostok;
   const home = 'riskproof-concept.html';
   const queryLink = (target, values, hash) => {
@@ -21,9 +24,12 @@
   };
   const testLink = d => queryLink('riskproof-test-page.html', { direction: d });
   const offerLink = (type, d) => queryLink('riskproof-offer-template-page.html', { type, direction: d });
-  const anketaLink = d => d === 'finance'
-    ? 'riskproof-anketa-finance-page.html'
-    : d === 'proforientation' ? 'riskproof-anketa-proforientation-page.html' : 'riskproof-anketa-page.html';
+  const anketaLink = d => queryLink(
+    d === 'finance'
+      ? 'riskproof-anketa-finance-page.html'
+      : d === 'proforientation' ? 'riskproof-anketa-proforientation-page.html' : 'riskproof-anketa-page.html',
+    { direction: d }
+  );
   const courseFile = {
     podrostok: 'riskproof-course-page.html',
     ustoichivost: 'riskproof-course-ustoichivost-page.html',
@@ -32,12 +38,10 @@
   };
   const thanksLink = (product, d) => queryLink('riskproof-spasibo-page.html', { product, direction: d });
 
-  if (!document.querySelector('link[rel="icon"]')) {
-    const icon = document.createElement('link');
-    icon.rel = 'icon';
-    icon.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="%232B1E1A"/><text x="50" y="62" text-anchor="middle" font-size="38" font-family="serif" fill="%23FDF7F2">RP</text></svg>';
-    document.head.appendChild(icon);
-  }
+  const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+  favicon.rel = 'icon';
+  favicon.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="%232B1E1A"/><text x="50" y="62" text-anchor="middle" font-size="38" font-family="serif" fill="%23FDF7F2">RP</text></svg>';
+  if (!favicon.parentNode) document.head.appendChild(favicon);
 
   document.querySelectorAll('.logo').forEach(logo => {
     logo.dataset.homeLink = 'true';
@@ -50,7 +54,12 @@
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); goHome(); }
     });
   });
-  document.querySelectorAll('.breadcrumb a').forEach(link => { link.href = home; });
+  document.querySelectorAll('.breadcrumb').forEach(crumb => {
+    crumb.querySelectorAll('a').forEach((link, index) => {
+      if (link.getAttribute('href') !== '#') return;
+      link.href = index === 0 ? home : directionData.page;
+    });
+  });
 
   if (file === 'riskproof-concept.html') {
     ['podrostok', 'ustoichivost', 'finance', 'proforientation'].forEach((d, index) => {
@@ -99,7 +108,12 @@
 
   if (file === 'riskproof-result-page.html') {
     document.title = `Результат теста «${directionData.testTitle}» — RiskProof`;
-    const zone = params.get('zone') || 'green';
+    const rawScores = [1,2,3,4].map(index => Number(params.get('p' + index)));
+    const hasRawScores = rawScores.every(value => Number.isFinite(value) && value >= 3 && value <= 15);
+    const average = hasRawScores ? rawScores.reduce((sum,value) => sum + value, 0) / rawScores.length : 0;
+    const weakCount = hasRawScores ? rawScores.filter(value => value < 7).length : 0;
+    const calculatedZone = average >= 11 ? 'green' : average >= 7 ? 'yellow' : weakCount <= 1 ? 'red1' : 'red2';
+    const zone = params.get('zone') || (hasRawScores ? calculatedZone : 'green');
     const resultCta = document.getElementById('result-cta');
     if (resultCta) resultCta.href = zone === 'red2'
       ? offerLink('session', direction)
@@ -157,13 +171,20 @@
 
   if (/riskproof-anketa(?:-finance|-proforientation)?-page\.html/.test(file)) {
     const submit = document.querySelector('.submit-block button');
-    if (submit) submit.addEventListener('click', event => {
-      event.preventDefault(); window.location.href = thanksLink('anketa', direction);
-    });
+    if (submit) {
+      submit.type = 'button';
+      submit.addEventListener('click', event => {
+        event.preventDefault();
+        submit.disabled = true;
+        submit.textContent = 'Анкета отправлена';
+        window.location.href = thanksLink('anketa', direction);
+      });
+    }
   }
 
   if (file === 'riskproof-spasibo-page.html') {
-    const product = params.get('product') || params.get('service') || 'course';
+    const rawProduct = params.get('product') || params.get('service') || 'course';
+    const product = rawProduct.startsWith('course_') ? 'course' : rawProduct;
     const eyebrow = document.querySelector('main .eyebrow');
     const title = document.getElementById('thanks-title');
     const lede = document.getElementById('thanks-lede');
@@ -173,7 +194,7 @@
     const note = document.getElementById('thanks-note');
     const states = {
       course: { eyebrow: 'Доступ к материалам', title: 'Спасибо! Материалы готовы', lede: 'После подключения оплаты доступ к материалам будет отправлен на вашу почту.', actionTitle: 'Открыть курс', actionSub: 'Материалы RiskProof', actionText: 'Перейти к курсу', href: courseFile[direction], note: 'Если письмо не пришло в течение нескольких минут, проверьте папку «Спам».' },
-      razbor: { eyebrow: 'Заявка принята', title: 'Спасибо! Анкета отправлена', lede: 'Ответы получены. Следующий шаг — заполнить короткую анкету по выбранному направлению.', actionTitle: 'Заполнить анкету', actionSub: '12 вопросов · 10–15 минут', actionText: 'Перейти к анкете', href: anketaLink(direction), note: 'Сохраните эту страницу как подтверждение отправки заявки.' },
+      razbor: { eyebrow: 'Оплата прошла успешно', title: 'Спасибо! Осталось заполнить анкету', lede: 'Чтобы Ольга могла подготовить персональный план именно под вашу ситуацию, заполните короткую анкету по выбранному направлению.', actionTitle: 'Заполнить анкету', actionSub: '12 вопросов · 10–15 минут', actionText: 'Перейти к анкете', href: anketaLink(direction), note: 'Ссылка на анкету сохранит выбранное направление.' },
       checklist: { eyebrow: 'Чек-лист готовится', title: 'Спасибо! Запрос принят', lede: 'Ссылка на чек-лист появится после подключения формы выдачи материалов.', actionTitle: 'Продолжить диагностику', actionSub: directionData.title, actionText: 'Пройти тест', href: testLink(direction), note: 'Пока email-выдача не подключена, тест остаётся доступен без регистрации.' },
       result: { eyebrow: 'Результат теста отправлен', title: 'Расшифровка результата готовится', lede: 'Письмо с результатом и рекомендациями будет отправлено после подключения email-сервиса.', actionTitle: 'Продолжить по направлению', actionSub: directionData.title, actionText: 'Посмотреть материалы', href: directionData.page, note: 'Результат теста остаётся доступен в текущей вкладке.' },
       anketa: { eyebrow: 'Анкета отправлена', title: 'Спасибо! Анкета получена', lede: 'Ответы сохранены в рамках текущего сценария. Ольга изучит вашу ситуацию и подготовит следующий шаг.', actionTitle: 'Вернуться к направлению', actionSub: directionData.title, actionText: 'Вернуться', href: directionData.page, note: 'Сохраните эту страницу как подтверждение отправки анкеты.' },

@@ -3,6 +3,8 @@ html, body { max-width: 100%; }
 img, svg { max-width: 100%; }
 button, input, textarea, select { max-width: 100%; }
 .demo-bar { display: none !important; }
+.footer-disclaimer { display: none !important; }
+header { position: sticky !important; top: 0 !important; transform: none !important; }
 .test-block, .test-block-info, .test-block-params,
 .email-capture, .email-capture-text, .email-capture-form { min-width: 0 !important; max-width: 100% !important; }
 .test-block-info, .test-block-params { width: 100% !important; overflow-wrap: anywhere; }
@@ -37,6 +39,15 @@ button, input, textarea, select { max-width: 100%; }
 .entrance-standard h2 { font-size: 24px; margin-bottom: 12px; }
 .entrance-standard p { font-size: 14px; line-height: 1.65; margin: 0; }
 
+.telegram-callout {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
+  margin-top: 28px; padding: 30px 34px; border: 1px solid var(--line);
+  border-radius: 3px; background: var(--chocolate); color: var(--cream);
+}
+.telegram-callout h3 { color: var(--cream); font-size: 25px; margin-bottom: 7px; }
+.telegram-callout p { color: rgba(253,247,242,.68); margin: 0; font-size: 15px; }
+.telegram-callout .btn { background: var(--cream); color: var(--chocolate); justify-content: center; }
+
 @media (max-width: 767px) {
   html, body { overflow-x: hidden; }
   body { font-size: 17px !important; font-weight: 500 !important; line-height: 1.65 !important; }
@@ -51,6 +62,25 @@ button, input, textarea, select { max-width: 100%; }
   }
   input, textarea, select { font-size: 16px !important; font-weight: 500 !important; }
   .container { padding-left: 22px !important; padding-right: 22px !important; }
+  .header-inner { gap: 12px !important; min-width: 0; }
+  .header-inner > .breadcrumb {
+    min-width: 0; flex: 1; overflow: hidden; white-space: nowrap;
+    text-overflow: ellipsis; text-align: right;
+  }
+  .header-inner nav { min-width: 0; margin-left: auto; gap: 12px !important; }
+  .header-inner nav .breadcrumb { display: none !important; }
+  .header-inner nav .btn { padding: 11px 16px !important; }
+  .hero-cta-row { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .hero-cta-row .hero-note { display: block; }
+  .product-row {
+    grid-template-columns: 40px minmax(0,1fr) !important;
+    grid-template-areas: "icon info" "icon price" "icon cta" !important;
+    column-gap: 16px !important; row-gap: 10px !important;
+  }
+  .product-row .product-icon { grid-area: icon; align-self: start; }
+  .product-row .product-info { grid-area: info; min-width: 0; }
+  .product-row .product-price { grid-area: price; justify-self: start; white-space: normal; }
+  .product-row > .btn { grid-area: cta; justify-self: start; width: 100%; white-space: normal; justify-content: center; }
   .lineup-tabs { flex-wrap: wrap !important; justify-content: flex-start !important; }
   .lineup-tabs .tab-btn { flex: 1 1 45%; min-width: 0; padding: 12px 10px !important; }
   .journey-grid { grid-template-columns: 1fr; }
@@ -70,4 +100,9 @@ button, input, textarea, select { max-width: 100%; }
     border-radius: 2px !important;
   }
   .form-row .btn, .email-form-row .btn { width: 100% !important; border-radius: 2px !important; }
+  .interpretation-cta { align-items: stretch !important; }
+  .interpretation-cta .btn { width: 100% !important; white-space: normal !important; justify-content: center; text-align: center; }
+  .interpretation-cta .price-note { width: 100%; text-align: center; }
+  .telegram-callout { grid-template-columns: 1fr; padding: 26px 22px; gap: 20px; }
+  .telegram-callout .btn { width: 100%; white-space: normal; }
 }
