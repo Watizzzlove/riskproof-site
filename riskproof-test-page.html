@@ -178,15 +178,21 @@
         const groupScores = [];
         for(let i=0; i<4; i++){
           const part = answers.slice(i*3, i*3+3).reduce((sum, value)=>sum + value, 0);
-          groupScores.push(Math.round(part / 15 * 100));
+          groupScores.push(part);
         }
-        const weakGroups = groupScores.filter(score=>score < 55).length;
-        const zone = total >= 49 ? 'green' : total >= 37 ? 'yellow' : weakGroups <= 1 ? 'red1' : 'red2';
+        const average = total / groupScores.length;
+        const weakGroups = groupScores.filter(score=>score < 7).length;
+        const zone = average >= 11 ? 'green' : average >= 7 ? 'yellow' : weakGroups <= 1 ? 'red1' : 'red2';
+        const legacyScores = groupScores.map(score=>Math.round((score - 3) / 12 * 100));
         const resultParams = new URLSearchParams({
           direction:testDirection,
           zone,
           score:String(total),
-          scores:groupScores.join(',')
+          p1:String(groupScores[0]),
+          p2:String(groupScores[1]),
+          p3:String(groupScores[2]),
+          p4:String(groupScores[3]),
+          scores:legacyScores.join(',')
         });
         window.location.href = 'riskproof-result-page.html?' + resultParams.toString();
       }
