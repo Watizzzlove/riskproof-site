@@ -1,4 +1,15 @@
-/* Shared accessibility and navigation refinements for all standalone pages. */
+/* Shared accessibility, navigation and responsive refinements. */
+html, body { max-width: 100%; }
+img, svg { max-width: 100%; }
+button, input, textarea, select { max-width: 100%; }
+.demo-bar { display: none !important; }
+.test-block, .test-block-info, .test-block-params,
+.email-capture, .email-capture-text, .email-capture-form { min-width: 0 !important; max-width: 100% !important; }
+.test-block-info, .test-block-params { width: 100% !important; overflow-wrap: anywhere; }
+.email-capture-form input { width: 100% !important; }
+.hero-visual, .radar-card { min-width: 0; max-width: 100%; }
+.hero-visual svg, .radar-card svg { overflow: visible; }
+.footer-links a[href^="http"] { color: var(--terracotta); }
 .logo[data-home-link], .dir-card[data-href] { cursor: pointer; }
 .logo[data-home-link]:focus-visible, .dir-card[data-href]:focus-visible {
   outline: 2px solid var(--terracotta);
@@ -27,6 +38,7 @@
 .entrance-standard p { font-size: 14px; line-height: 1.65; margin: 0; }
 
 @media (max-width: 767px) {
+  html, body { overflow-x: hidden; }
   body { font-size: 17px !important; font-weight: 500 !important; line-height: 1.65 !important; }
   section p, main p, section li, main li, section label, main label,
   .lede, .pillar-text, .product-info p, .compare-card p, .compare-fit,
@@ -49,4 +61,13 @@
   .media-card { padding: 34px 24px; }
   .entrance-standard { padding: 22px 20px; }
   .entrance-standard p { font-size: 16px !important; }
+  .test-block-info, .test-block-params { padding: 28px 22px !important; }
+  .email-capture-text, .email-capture-form { padding: 28px 22px !important; }
+  .hero-visual svg, .radar-card svg { width: 100% !important; height: auto !important; }
+  .form-row, .email-form-row { flex-direction: column !important; gap: 12px !important; }
+  .form-row input, .email-form-row input {
+    border: 1px solid var(--chocolate-12) !important;
+    border-radius: 2px !important;
+  }
+  .form-row .btn, .email-form-row .btn { width: 100% !important; border-radius: 2px !important; }
 }

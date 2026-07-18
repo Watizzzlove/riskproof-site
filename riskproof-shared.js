@@ -1,149 +1,208 @@
 (function () {
+  'use strict';
+
   const params = new URLSearchParams(window.location.search);
   const file = window.location.pathname.split('/').pop() || 'riskproof-concept.html';
   const data = window.RiskProofData && window.RiskProofData.directions;
+  if (!data) return;
+
   const byFile = {
-    'riskproof-podrostok-page.html':'podrostok',
-    'riskproof-ustoichivost-page.html':'ustoichivost',
-    'riskproof-finance-page.html':'finance',
-    'riskproof-proforientation-page.html':'proforientation'
+    'riskproof-podrostok-page.html': 'podrostok',
+    'riskproof-ustoichivost-page.html': 'ustoichivost',
+    'riskproof-finance-page.html': 'finance',
+    'riskproof-proforientation-page.html': 'proforientation'
   };
-  const direction = params.get('direction') || byFile[file] || 'podrostok';
-  const directionData = data && data[direction] ? data[direction] : data.podrostok;
-  const queryLink = (target, values, hash) => {
-    const q = new URLSearchParams(values || {});
-    return target + (q.toString() ? '?' + q.toString() : '') + (hash || '');
-  };
+  const direction = params.get('direction') || params.get('type') || byFile[file] || 'podrostok';
+  const directionData = data[direction] || data.podrostok;
   const home = 'riskproof-concept.html';
-  const testLink = d => queryLink('riskproof-test-page.html', {direction:d});
-  const offerLink = (type, d) => queryLink('riskproof-offer-template-page.html', {type:type, direction:d});
-  const anketaLink = d => d === 'finance' ? 'riskproof-anketa-finance-page.html' : d === 'proforientation' ? 'riskproof-anketa-proforientation-page.html' : 'riskproof-anketa-page.html';
+  const queryLink = (target, values, hash) => {
+    const query = new URLSearchParams(values || {}).toString();
+    return target + (query ? `?${query}` : '') + (hash || '');
+  };
+  const testLink = d => queryLink('riskproof-test-page.html', { direction: d });
+  const offerLink = (type, d) => queryLink('riskproof-offer-template-page.html', { type, direction: d });
+  const anketaLink = d => d === 'finance'
+    ? 'riskproof-anketa-finance-page.html'
+    : d === 'proforientation' ? 'riskproof-anketa-proforientation-page.html' : 'riskproof-anketa-page.html';
+  const courseFile = {
+    podrostok: 'riskproof-course-page.html',
+    ustoichivost: 'riskproof-course-ustoichivost-page.html',
+    finance: 'riskproof-course-finance-page.html',
+    proforientation: 'riskproof-course-proforientation-page.html'
+  };
+  const thanksLink = (product, d) => queryLink('riskproof-spasibo-page.html', { product, direction: d });
+
+  if (!document.querySelector('link[rel="icon"]')) {
+    const icon = document.createElement('link');
+    icon.rel = 'icon';
+    icon.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="%232B1E1A"/><text x="50" y="62" text-anchor="middle" font-size="38" font-family="serif" fill="%23FDF7F2">RP</text></svg>';
+    document.head.appendChild(icon);
+  }
 
   document.querySelectorAll('.logo').forEach(logo => {
-    logo.dataset.homeLink = 'true'; logo.tabIndex = 0; logo.setAttribute('role','link');
-    logo.setAttribute('aria-label','На главную RiskProof');
-    const go = () => { window.location.href = home; };
-    logo.addEventListener('click', go);
-    logo.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    logo.dataset.homeLink = 'true';
+    logo.tabIndex = 0;
+    logo.setAttribute('role', 'link');
+    logo.setAttribute('aria-label', 'На главную RiskProof');
+    const goHome = () => { window.location.href = home; };
+    logo.addEventListener('click', goHome);
+    logo.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); goHome(); }
+    });
   });
-  document.querySelectorAll('.breadcrumb a').forEach(a => a.href = home);
+  document.querySelectorAll('.breadcrumb a').forEach(link => { link.href = home; });
 
   if (file === 'riskproof-concept.html') {
-    const cardMap = ['podrostok','ustoichivost','finance','proforientation'];
-    document.querySelectorAll('.dir-card').forEach((card, i) => {
-      const d = cardMap[i]; if (!d) return;
-      card.dataset.href = data[d].page; card.tabIndex = 0; card.setAttribute('role','link');
+    ['podrostok', 'ustoichivost', 'finance', 'proforientation'].forEach((d, index) => {
+      const card = document.querySelectorAll('.dir-card')[index];
+      if (!card || !data[d]) return;
+      card.dataset.href = data[d].page;
+      card.tabIndex = 0;
+      card.setAttribute('role', 'link');
       const heading = card.querySelector('h3');
       if (heading && !heading.querySelector('a')) heading.innerHTML = `<a href="${data[d].page}">${heading.textContent}</a>`;
-      const cta = card.querySelector('.btn-text'); if (cta) cta.href = testLink(d);
-      const go = e => { if (!e.target.closest('a,button')) window.location.href = data[d].page; };
+      const test = card.querySelector('.btn-text');
+      if (test) test.href = testLink(d);
+      const go = event => { if (!event.target.closest('a,button')) window.location.href = data[d].page; };
       card.addEventListener('click', go);
-      card.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('a,button')) { e.preventDefault(); window.location.href = data[d].page; } });
+      card.addEventListener('keydown', event => {
+        if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('a,button')) {
+          event.preventDefault(); window.location.href = data[d].page;
+        }
+      });
     });
   }
 
-  document.querySelectorAll('a[href="#test"]').forEach(a => a.href = testLink(direction));
-  document.querySelectorAll('section#test a.btn, section[id="test"] a.btn').forEach(a => a.href = testLink(direction));
+  document.querySelectorAll('a[href="#test"], section#test a.btn, section[id="test"] a.btn').forEach(link => {
+    link.href = testLink(direction);
+  });
 
   document.querySelectorAll('.product-row').forEach(row => {
     const panel = row.closest('.lineup-panel');
-    const d = panel ? panel.dataset.panel : direction;
-    const kicker = (row.querySelector('.kicker') || {}).textContent || '';
-    const a = row.querySelector('a.btn'); if (!a) return;
-    if (/Тест/i.test(kicker)) a.href = testLink(d);
-    else if (/Чек-лист/i.test(kicker)) a.href = queryLink('riskproof-checklist-page.html', {direction:d});
-    else if (/Персональный разбор/i.test(kicker)) a.href = offerLink('razbor', d);
-    else if (/Стратегическая сессия/i.test(kicker)) a.href = offerLink('session', d);
-    else if (/Индивидуаль/i.test(kicker)) a.href = offerLink('individual', d);
-    else if (/Курс/i.test(kicker)) {
-      if (d === 'podrostok') a.href = 'riskproof-course-page.html';
-      else { a.href = data[d].page + '#products'; a.title = 'Отдельная страница курса пока отсутствует — переход к линейке направления'; }
-    }
+    const currentDirection = panel?.dataset.panel || direction;
+    const kicker = row.querySelector('.kicker')?.textContent || '';
+    const link = row.querySelector('a.btn');
+    if (!link) return;
+    if (/Тест/i.test(kicker)) link.href = testLink(currentDirection);
+    else if (/Чек-лист/i.test(kicker)) link.href = queryLink('riskproof-checklist-page.html', { direction: currentDirection });
+    else if (/Персональный разбор/i.test(kicker)) link.href = offerLink('razbor', currentDirection);
+    else if (/Стратегическая сессия/i.test(kicker)) link.href = offerLink('session', currentDirection);
+    else if (/Индивидуальн/i.test(kicker)) link.href = offerLink('individual', currentDirection);
+    else if (/Курс/i.test(kicker)) link.href = courseFile[currentDirection];
   });
 
   if (file === 'riskproof-test-page.html') {
     document.title = `Тест «${directionData.testTitle}» — RiskProof`;
-    const exit = document.querySelector('.exit-link'); if (exit) exit.href = directionData.page;
+    const exit = document.querySelector('.exit-link');
+    if (exit) exit.href = directionData.page;
   }
 
   if (file === 'riskproof-result-page.html') {
     document.title = `Результат теста «${directionData.testTitle}» — RiskProof`;
-    const resultCta = document.getElementById('result-cta');
     const zone = params.get('zone') || 'green';
-    if (resultCta) {
-      resultCta.href = zone === 'red2' ? offerLink('session', direction) : zone === 'red1' ? offerLink('razbor', direction) : directionData.page + '#products';
-    }
-    const crossDirections = Object.keys(data).filter(d => d !== direction);
-    document.querySelectorAll('.crosssell-card').forEach((a, i) => {
-      if (!crossDirections[i]) return;
-      const next = data[crossDirections[i]];
-      a.href = testLink(crossDirections[i]);
-      const heading = a.querySelector('h4'); if (heading) heading.textContent = next.title;
-      const note = a.querySelector('span:not(.crosssell-icon)'); if (note) note.textContent = 'Бесплатный тест · 3 минуты';
+    const resultCta = document.getElementById('result-cta');
+    if (resultCta) resultCta.href = zone === 'red2'
+      ? offerLink('session', direction)
+      : zone === 'red1' ? offerLink('razbor', direction) : `${directionData.page}#products`;
+    const otherDirections = Object.keys(data).filter(d => d !== direction);
+    document.querySelectorAll('.crosssell-card').forEach((card, index) => {
+      const nextDirection = otherDirections[index];
+      if (!nextDirection) return;
+      card.href = testLink(nextDirection);
+      const heading = card.querySelector('h4');
+      if (heading) heading.textContent = data[nextDirection].title;
     });
-    const emailButton = document.querySelector('.email-capture-form button');
-    if (emailButton) emailButton.addEventListener('click', e => { e.preventDefault(); window.location.href = queryLink('riskproof-spasibo-page.html', {product:'result', direction:direction}); });
+    const emailForm = document.querySelector('.email-capture-form');
+    if (emailForm) emailForm.addEventListener('submit', event => {
+      event.preventDefault(); window.location.href = thanksLink('result', direction);
+    });
   }
 
   if (file === 'riskproof-checklist-page.html') {
-    const pill = document.querySelector(`.demo-pill[data-type="${direction}"]`); if (pill) pill.click();
-    const cross = document.getElementById('cross-cta'); if (cross) cross.href = testLink(direction);
-    const download = document.querySelector('.email-form-row button');
-    if (download) download.addEventListener('click', e => { e.preventDefault(); window.location.href = queryLink('riskproof-spasibo-page.html', {product:'checklist', direction:direction}); });
+    const checklistHeading = document.querySelector('h1')?.textContent?.trim();
+    if (checklistHeading) document.title = `Чек-лист «${checklistHeading}» — RiskProof`;
+    const crossCta = document.getElementById('cross-cta');
+    if (crossCta) crossCta.href = testLink(direction);
+    const emailForm = document.querySelector('.email-form-row');
+    if (emailForm) emailForm.addEventListener('submit', event => {
+      event.preventDefault(); window.location.href = thanksLink('checklist', direction);
+    });
   }
 
   if (file === 'riskproof-offer-template-page.html') {
     const type = params.get('type') || 'razbor';
-    const pill = document.querySelector(`.demo-pill[data-type="${type}"]`); if (pill) pill.click();
-    document.querySelectorAll('.hero-kicker').forEach(el => el.textContent = `Направление · ${directionData.title}`);
-    const destination = queryLink('riskproof-spasibo-page.html', {product:'razbor', direction:direction});
-    ['offer-cta','final-cta-btn'].forEach(id => { const a = document.getElementById(id); if (a) a.href = destination; });
+    const offerTitles = {
+      razbor: 'Персональный разбор ситуации',
+      session: 'Стратегическая сессия',
+      individual: 'Индивидуальное сопровождение'
+    };
+    document.title = `${offerTitles[type] || offerTitles.razbor} — RiskProof`;
+    document.querySelectorAll('.hero-kicker').forEach(el => { el.textContent = `Направление · ${directionData.title}`; });
+    const product = ['razbor', 'session', 'individual'].includes(type) ? type : 'razbor';
+    const destination = thanksLink(product, direction);
+    ['offer-cta', 'final-cta-btn'].forEach(id => {
+      const link = document.getElementById(id);
+      if (link) link.href = destination;
+    });
   }
 
-  if (file === 'riskproof-course-page.html') {
-    document.querySelectorAll('a.btn-primary').forEach(a => a.href = queryLink('riskproof-spasibo-page.html', {product:'course', direction:'podrostok'}));
+  if (file === 'riskproof-course-page.html' || file === 'riskproof-course-ustoichivost-page.html' ||
+      file === 'riskproof-course-finance-page.html' || file === 'riskproof-course-proforientation-page.html') {
+    const courseDirection = byFile[file.replace('riskproof-course-', 'riskproof-').replace('-page.html', '-page.html')] ||
+      (file.includes('finance') ? 'finance' : file.includes('proforientation') ? 'proforientation' : file.includes('ustoichivost') ? 'ustoichivost' : 'podrostok');
+    document.querySelectorAll('a.btn-primary').forEach(link => {
+      link.href = thanksLink('course', courseDirection);
+    });
   }
 
   if (/riskproof-anketa(?:-finance|-proforientation)?-page\.html/.test(file)) {
-    const button = document.querySelector('.submit-block button');
-    if (button) button.addEventListener('click', e => { e.preventDefault(); window.location.href = queryLink('riskproof-spasibo-page.html', {product:'anketa', direction:direction}); });
+    const submit = document.querySelector('.submit-block button');
+    if (submit) submit.addEventListener('click', event => {
+      event.preventDefault(); window.location.href = thanksLink('anketa', direction);
+    });
   }
 
   if (file === 'riskproof-spasibo-page.html') {
-    const product = params.get('product') || 'course';
-    const pill = document.querySelector(`.demo-pill[data-type="${product}"]`); if (pill) pill.click();
+    const product = params.get('product') || params.get('service') || 'course';
+    const eyebrow = document.querySelector('main .eyebrow');
+    const title = document.getElementById('thanks-title');
+    const lede = document.getElementById('thanks-lede');
+    const actionTitle = document.getElementById('action-title');
+    const actionSub = document.getElementById('action-sub');
     const action = document.getElementById('action-btn');
-    if (product === 'course') action.href = 'riskproof-course-page.html';
-    else if (product === 'razbor') action.href = anketaLink(direction);
-    else if (product === 'checklist') action.href = queryLink('riskproof-checklist-page.html', {direction:direction});
-    else if (product === 'result') {
-      document.getElementById('thanks-title').textContent = 'Расшифровка результата отправлена';
-      document.getElementById('thanks-lede').textContent = 'Письмо с результатом и краткими рекомендациями уже готовится. Если его не видно, проверьте папку «Спам».';
-      document.getElementById('action-title').textContent = 'Продолжить по направлению';
-      document.getElementById('action-sub').textContent = directionData.title;
-      action.textContent = 'Посмотреть материалы'; action.href = directionData.page;
-      document.getElementById('thanks-note').textContent = 'Результат теста остаётся доступен в текущем браузере, пока открыта вкладка.';
-    }
-    else if (product === 'anketa') {
-      document.getElementById('thanks-title').textContent = 'Спасибо! Анкета отправлена';
-      document.getElementById('thanks-lede').textContent = 'Ответы сохранены. Ольга изучит вашу ситуацию и подготовит следующий шаг в оговорённый срок.';
-      document.getElementById('action-title').textContent = 'Вернуться к направлению';
-      document.getElementById('action-sub').textContent = directionData.title;
-      action.textContent = 'Вернуться'; action.href = directionData.page;
-      document.getElementById('thanks-note').textContent = 'Сохраните эту страницу как подтверждение отправки анкеты.';
-    }
+    const note = document.getElementById('thanks-note');
+    const states = {
+      course: { eyebrow: 'Доступ к материалам', title: 'Спасибо! Материалы готовы', lede: 'После подключения оплаты доступ к материалам будет отправлен на вашу почту.', actionTitle: 'Открыть курс', actionSub: 'Материалы RiskProof', actionText: 'Перейти к курсу', href: courseFile[direction], note: 'Если письмо не пришло в течение нескольких минут, проверьте папку «Спам».' },
+      razbor: { eyebrow: 'Заявка принята', title: 'Спасибо! Анкета отправлена', lede: 'Ответы получены. Следующий шаг — заполнить короткую анкету по выбранному направлению.', actionTitle: 'Заполнить анкету', actionSub: '12 вопросов · 10–15 минут', actionText: 'Перейти к анкете', href: anketaLink(direction), note: 'Сохраните эту страницу как подтверждение отправки заявки.' },
+      checklist: { eyebrow: 'Чек-лист готовится', title: 'Спасибо! Запрос принят', lede: 'Ссылка на чек-лист появится после подключения формы выдачи материалов.', actionTitle: 'Продолжить диагностику', actionSub: directionData.title, actionText: 'Пройти тест', href: testLink(direction), note: 'Пока email-выдача не подключена, тест остаётся доступен без регистрации.' },
+      result: { eyebrow: 'Результат теста отправлен', title: 'Расшифровка результата готовится', lede: 'Письмо с результатом и рекомендациями будет отправлено после подключения email-сервиса.', actionTitle: 'Продолжить по направлению', actionSub: directionData.title, actionText: 'Посмотреть материалы', href: directionData.page, note: 'Результат теста остаётся доступен в текущей вкладке.' },
+      anketa: { eyebrow: 'Анкета отправлена', title: 'Спасибо! Анкета получена', lede: 'Ответы сохранены в рамках текущего сценария. Ольга изучит вашу ситуацию и подготовит следующий шаг.', actionTitle: 'Вернуться к направлению', actionSub: directionData.title, actionText: 'Вернуться', href: directionData.page, note: 'Сохраните эту страницу как подтверждение отправки анкеты.' },
+      session: { eyebrow: 'Заявка на сессию', title: 'Следующий шаг — связаться с Ольгой', lede: 'Стратегическая сессия требует согласования формата и времени напрямую.', actionTitle: 'Связаться в Telegram', actionSub: directionData.title, actionText: 'Открыть Telegram', href: 'https://t.me/riskproof', note: 'Ссылка откроется в новом окне.' },
+      individual: { eyebrow: 'Заявка на сопровождение', title: 'Следующий шаг — связаться с Ольгой', lede: 'Индивидуальное сопровождение согласуется после короткого знакомства с вашей ситуацией.', actionTitle: 'Связаться в Telegram', actionSub: directionData.title, actionText: 'Открыть Telegram', href: 'https://t.me/riskproof', note: 'Ссылка откроется в новом окне.' }
+    };
+    const state = states[product] || states.course;
+    if (eyebrow) eyebrow.textContent = state.eyebrow;
+    if (title) title.textContent = state.title;
+    if (lede) lede.textContent = state.lede;
+    if (actionTitle) actionTitle.textContent = state.actionTitle;
+    if (actionSub) actionSub.textContent = state.actionSub;
+    if (action) { action.textContent = state.actionText; action.href = state.href; if (state.href.startsWith('http')) action.target = '_blank'; }
+    if (note) note.textContent = state.note;
   }
 
-  document.querySelectorAll('.footer-links a').forEach(a => {
-    if (a.getAttribute('href') === '#') {
-      a.href = home + '#author';
-      a.title = 'Отдельная целевая страница отсутствует в исходном комплекте';
-      a.dataset.fallback = 'missing-page';
-    }
+  document.querySelectorAll('input[type="email"]').forEach(input => {
+    input.required = true;
+    input.setAttribute('autocomplete', 'email');
   });
-  document.querySelectorAll('a[href="#"]').forEach(a => {
-    a.href = home;
-    a.title = a.title || 'Целевая страница отсутствует — переход на главную';
-    a.dataset.fallback = 'missing-page';
+  document.querySelectorAll('.footer-links a[href="#"]').forEach(link => {
+    const label = link.textContent.trim().toLowerCase();
+    if (label.includes('telegram')) { link.href = 'https://t.me/riskproof'; link.target = '_blank'; }
+    else if (label.includes('оферт')) link.href = 'riskproof-oferta.html';
+    else if (label.includes('политик') || label.includes('данн')) link.href = 'riskproof-policy.html';
+    else { link.href = home + '#author'; link.dataset.fallback = 'missing-page'; }
+  });
+  document.querySelectorAll('a[href="#"]').forEach(link => {
+    link.href = home;
+    link.dataset.fallback = 'missing-page';
   });
 })();

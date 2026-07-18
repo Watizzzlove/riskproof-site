@@ -263,13 +263,13 @@
           <p>Пришлём подробный разбор каждого параметра и персональную
              рекомендацию — чтобы вернуться к результату в спокойный момент.</p>
         </div>
-        <div class="email-capture-form">
+        <form class="email-capture-form">
           <div class="form-row">
-            <input type="email" placeholder="Ваш email">
-            <button class="btn btn-primary">Отправить</button>
+            <input type="email" name="email" placeholder="Ваш email" autocomplete="email" required>
+            <button class="btn btn-primary" type="submit">Отправить</button>
           </div>
           <span class="form-note">Без спама. Только расшифровка результата и, если откликнется, — полезные материалы по теме.</span>
-        </div>
+        </form>
       </div>
     </div>
   </section>

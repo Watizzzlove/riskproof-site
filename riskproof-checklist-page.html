@@ -172,10 +172,10 @@
             </div>
             <div class="pdf-title" id="pdf-mockup-title">7 красных флагов: как понять, что контакт с подростком под угрозой</div>
           </div>
-          <div class="email-form-row">
-            <input type="email" placeholder="Ваш email">
-            <button class="btn btn-primary">Скачать</button>
-          </div>
+          <form class="email-form-row">
+            <input type="email" name="email" placeholder="Ваш email" autocomplete="email" required>
+            <button class="btn btn-primary" type="submit">Скачать</button>
+          </form>
           <p class="form-note">PDF придёт на почту сразу после отправки</p>
         </div>
       </div>
@@ -347,7 +347,8 @@
       btn.addEventListener('click', ()=>render(btn.dataset.type));
     });
 
-    render('podrostok');
+    const checklistParams = new URLSearchParams(window.location.search);
+    render(checklistParams.get('direction') || checklistParams.get('type') || 'podrostok');
   </script>
 
 <script src="riskproof-shared.js"></script>

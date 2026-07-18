@@ -304,7 +304,7 @@
       btn.addEventListener('click', ()=>render(btn.dataset.type));
     });
 
-    render('razbor');
+    render(new URLSearchParams(window.location.search).get('type') || 'razbor');
   </script>
 
 <script src="riskproof-shared.js"></script>
