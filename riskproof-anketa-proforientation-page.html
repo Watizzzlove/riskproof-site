@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета «Карта профессиональных рисков» — RiskProof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF7F2; --bg:#FFFAF5; --terracotta:#B05A3E; --terracotta-d:#904933;
+    --chocolate:#2B1E1A; --chocolate-60:rgba(43,30,26,0.6); --chocolate-35:rgba(43,30,26,0.35);
+    --chocolate-12:rgba(43,30,26,0.12); --line:rgba(43,30,26,0.14);
+    --serif:'Cormorant Garamond', serif; --sans:'Inter', sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--chocolate); font-family:var(--sans); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible{ outline:2px solid var(--terracotta); outline-offset:3px; }
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; color:var(--chocolate); }
+  .container{ max-width:720px; margin:0 auto; padding:0 32px; }
+  .eyebrow{ font-size:13px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--terracotta); display:inline-block; margin-bottom:16px; }
+
+  header{ border-bottom:1px solid var(--line); padding:24px 0; }
+  .header-inner{ max-width:720px; margin:0 auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; }
+  .logo{ font-family:var(--serif); font-size:20px; font-weight:600; }
+  .logo span{ color:var(--terracotta); }
+  .lock-note{ font-size:12.5px; color:var(--chocolate-35); display:flex; align-items:center; gap:6px; }
+
+  .intro{ padding:56px 0 40px; border-bottom:1px solid var(--line); }
+  .intro h1{ font-size:30px; margin-bottom:16px; line-height:1.25; }
+  .intro p{ font-size:15.5px; color:var(--chocolate-60); line-height:1.7; max-width:56ch; }
+
+  .form-block{ padding:48px 0; border-bottom:1px solid var(--line); }
+  .form-block:last-of-type{ border-bottom:none; }
+  .block-num{ font-family:var(--serif); font-style:italic; font-size:15px; color:var(--terracotta); margin-bottom:8px; }
+  .block-title{ font-size:22px; margin-bottom:32px; }
+
+  .field{ margin-bottom:28px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:14.5px; font-weight:500; color:var(--chocolate); margin-bottom:10px; }
+  .field .hint{ font-size:12.5px; color:var(--chocolate-35); font-weight:400; margin-top:4px; display:block; }
+
+  input[type=text], textarea{
+    width:100%; padding:14px 16px; border:1px solid var(--chocolate-12); border-radius:2px;
+    font-family:var(--sans); font-size:14.5px; background:var(--cream); color:var(--chocolate);
+  }
+  textarea{ resize:vertical; min-height:100px; }
+  input::placeholder, textarea::placeholder{ color:var(--chocolate-35); }
+
+  .radio-group{ display:flex; flex-direction:column; gap:10px; }
+  .radio-option{
+    display:flex; align-items:center; gap:12px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:2px; background:var(--bg); transition:all .2s ease;
+  }
+  .radio-option:hover{ border-color:var(--terracotta); }
+  .radio-option.selected{ border-color:var(--terracotta); background:rgba(176,90,62,0.06); }
+  .radio-dot{ width:16px; height:16px; border-radius:50%; border:1.5px solid var(--chocolate-12); flex-shrink:0; position:relative; }
+  .radio-option.selected .radio-dot{ border-color:var(--terracotta); }
+  .radio-option.selected .radio-dot::after{ content:""; position:absolute; inset:3px; border-radius:50%; background:var(--terracotta); }
+  .radio-option span.text{ font-size:14px; color:var(--chocolate-60); }
+  .radio-option.selected span.text{ color:var(--chocolate); }
+
+  .other-input{ margin-top:10px; display:none; }
+  .other-input.visible{ display:block; }
+
+  .submit-block{ padding:48px 0 80px; text-align:center; }
+  .btn{ display:inline-flex; align-items:center; gap:10px; padding:17px 40px; border-radius:2px; font-size:14px; font-weight:600; letter-spacing:0.02em; transition:all .25s ease; }
+  .btn-primary{ background:var(--terracotta); color:var(--cream); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-1px); }
+  .submit-note{ font-size:12.5px; color:var(--chocolate-35); margin-top:18px; max-width:44ch; margin-left:auto; margin-right:auto; }
+
+  @media (max-width:600px){ .container, .header-inner{ padding:0 22px; } }
+</style>
+<link rel="stylesheet" href="riskproof-shared.css">
+<script src="riskproof-data.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">Risk<span>Proof</span></div>
+      <div class="lock-note">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--chocolate-35)" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="1"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+        Доступно после оплаты
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <span class="eyebrow">Персональный разбор · Профориентация и самоопределение</span>
+      <h1>Анкета для персонального разбора «Карта профессиональных рисков»</h1>
+      <p>Спасибо, что доверились RiskProof. Эта анкета поможет мне понять вашу карьерную
+         ситуацию и подготовить план действий, созданный специально для вас. Отвечайте
+         честно — здесь нет правильных и неправильных ответов. Всё, что вы напишете,
+         останется между нами.</p>
+    </div>
+
+    <div class="form-block">
+      <div class="block-num">Блок 1</div>
+      <h2 class="block-title">Общая информация</h2>
+      <div class="field">
+        <label>Как к вам обращаться?</label>
+        <input type="text" placeholder="Ваше имя">
+      </div>
+      <div class="field">
+        <label>Ваш возраст</label>
+        <div class="radio-group" data-name="age">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">До 18</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">18–25</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">25–35</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">35–45</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">45+</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ваш текущий статус</label>
+        <div class="radio-group" data-name="status">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Школьник</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Студент</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">Работаю по специальности</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Работаю не по специальности</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Не работаю</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">В декрете</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Другое</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <div class="block-num">Блок 2</div>
+      <h2 class="block-title">Ситуация «как есть»</h2>
+      <div class="field">
+        <label>Опишите вашу карьерную ситуацию в 2–3 предложениях. Что вас беспокоит?
+          <span class="hint">Например: «Не знаю, какую профессию выбрать», «Хочу сменить сферу, но боюсь», «Работаю, но не чувствую удовлетворения»</span>
+        </label>
+        <textarea placeholder="Расскажите своими словами..."></textarea>
+      </div>
+      <div class="field">
+        <label>Как давно вы находитесь в этой ситуации?</label>
+        <div class="radio-group" data-name="q5">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Меньше месяца</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">1–3 месяца</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">3–6 месяцев</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Больше полугода</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Больше года</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Что вы уже пробовали делать, чтобы определиться?
+          <span class="hint">Тесты, консультации, курсы, разговоры с близкими — что угодно</span>
+        </label>
+        <textarea placeholder="Что уже пробовали"></textarea>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <div class="block-num">Блок 3</div>
+      <h2 class="block-title">Четыре параметра RiskProof</h2>
+      <div class="field">
+        <label>Знаете ли вы, какие занятия приносят вам удовольствие и энергию?</label>
+        <div class="radio-group" data-name="q7">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Да, я точно знаю свои интересы</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">Примерно представляю</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Сомневаюсь, многое кажется интересным</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Нет, я не знаю, что мне нравится</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Знаете ли вы свои сильные стороны и навыки, которые ценят окружающие?</label>
+        <div class="radio-group" data-name="q8">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Да, могу перечислить минимум пять</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">Знаю два-три</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Затрудняюсь ответить</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Никогда об этом не задумывался(-лась)</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Изучали ли вы рынок труда и востребованность интересующих вас профессий?</label>
+        <div class="radio-group" data-name="q9">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Да, я хорошо представляю, что востребовано</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">Поверхностно, читал(а) статьи</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Нет, не знаю, с чего начать</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Нет, меня это пугает</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Что вас останавливает от выбора или смены профессии?</label>
+        <div class="radio-group" data-name="q10" data-has-other="true">
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Страх ошибиться</span></div>
+          <div class="radio-option selected"><div class="radio-dot"></div><span class="text">Давление родителей или окружения</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Неуверенность в своих силах</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Финансовые ограничения</span></div>
+          <div class="radio-option"><div class="radio-dot"></div><span class="text">Ничего не останавливает, я уже в процессе</span></div>
+          <div class="radio-option" data-other-trigger="true"><div class="radio-dot"></div><span class="text">Другое</span></div>
+        </div>
+        <div class="other-input" id="other-input-q10">
+          <input type="text" placeholder="Уточните, что именно">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <div class="block-num">Блок 4</div>
+      <h2 class="block-title">Дополнительные вопросы</h2>
+      <div class="field">
+        <label>Если бы у вас не было страхов и ограничений, чем бы вы хотели заниматься?</label>
+        <textarea placeholder="Мечтайте свободно — здесь нет ограничений"></textarea>
+      </div>
+      <div class="field">
+        <label>Что вы хотите получить в результате персонального разбора? Что для вас будет хорошим результатом?</label>
+        <textarea placeholder="Что для вас будет хорошим результатом?"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-block">
+      <button class="btn btn-primary">Отправить анкету</button>
+      <p class="submit-note">Ольга проанализирует ваши ответы и пришлёт персональный план в течение 48 часов.</p>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.radio-group').forEach(group=>{
+      const hasOther = group.dataset.hasOther === 'true';
+      group.querySelectorAll('.radio-option').forEach(opt=>{
+        opt.addEventListener('click', ()=>{
+          group.querySelectorAll('.radio-option').forEach(o=>o.classList.remove('selected'));
+          opt.classList.add('selected');
+          if(hasOther){
+            const otherInput = document.getElementById('other-input-' + group.dataset.name);
+            if(otherInput){
+              otherInput.classList.toggle('visible', opt.dataset.otherTrigger === 'true');
+            }
+          }
+        });
+      });
+    });
+  </script>
+
+<script src="riskproof-shared.js"></script>
+</body>
+</html>

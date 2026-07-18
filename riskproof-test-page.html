@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест «Индекс отношений с подростком» — RiskProof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF7F2; --bg:#FFFAF5; --terracotta:#B05A3E; --terracotta-d:#904933;
+    --chocolate:#2B1E1A; --chocolate-60:rgba(43,30,26,0.6); --chocolate-35:rgba(43,30,26,0.35);
+    --chocolate-12:rgba(43,30,26,0.12); --line:rgba(43,30,26,0.14);
+    --serif:'Cormorant Garamond', serif; --sans:'Inter', sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--chocolate); font-family:var(--sans); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible{ outline:2px solid var(--terracotta); outline-offset:3px; }
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; color:var(--chocolate); }
+  .container{ max-width:760px; margin:0 auto; padding:0 32px; }
+
+  .btn{ display:inline-flex; align-items:center; gap:10px; padding:16px 32px; border-radius:2px;
+        font-size:14px; font-weight:600; letter-spacing:0.02em; transition:all .25s ease; white-space:nowrap; }
+  .btn-primary{ background:var(--terracotta); color:var(--cream); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-1px); }
+  .btn-primary:disabled{ background:var(--chocolate-12); color:var(--chocolate-35); cursor:not-allowed; transform:none; }
+  .btn-text{ color:var(--chocolate-35); font-size:14px; font-weight:500; }
+  .btn-text:hover{ color:var(--chocolate-60); }
+
+  /* ================= HEADER (упрощённый — режим фокуса на тесте) ================= */
+  header{ padding:26px 0; border-bottom:1px solid var(--line); }
+  .header-inner{ max-width:760px; margin:0 auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; }
+  .logo{ font-family:var(--serif); font-size:20px; font-weight:600; }
+  .logo span{ color:var(--terracotta); }
+  .exit-link{ font-size:13px; color:var(--chocolate-35); }
+  .exit-link:hover{ color:var(--chocolate-60); }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ padding:36px 0 0; }
+  .progress-meta{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--chocolate-35); margin-bottom:10px; }
+  .progress-meta .group-label{ color:var(--terracotta); font-weight:600; letter-spacing:0.04em; text-transform:uppercase; font-size:11.5px; }
+  .progress-track{ height:3px; background:var(--chocolate-12); border-radius:3px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--terracotta); border-radius:3px; transition:width .35s ease; }
+
+  /* ================= QUESTION CARD ================= */
+  .question-wrap{ min-height:56vh; display:flex; flex-direction:column; justify-content:center; padding:60px 0; }
+  .q-number{ font-family:var(--serif); font-style:italic; font-size:20px; color:var(--terracotta); margin-bottom:22px; }
+  .q-text{ font-size:clamp(22px,3vw,30px); line-height:1.4; margin-bottom:48px; max-width:34ch; }
+
+  .scale{ display:flex; flex-direction:column; gap:12px; }
+  .scale-option{
+    display:flex; align-items:center; gap:18px; padding:18px 22px;
+    border:1px solid var(--line); border-radius:3px; background:var(--bg);
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .scale-option:hover{ border-color:var(--terracotta); background:var(--cream); }
+  .scale-option.selected{ border-color:var(--terracotta); background:rgba(176,90,62,0.08); }
+  .scale-num{
+    width:30px; height:30px; border-radius:50%; border:1.5px solid var(--chocolate-12);
+    display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:15px;
+    color:var(--chocolate-35); flex-shrink:0; transition:all .2s ease;
+  }
+  .scale-option.selected .scale-num{ background:var(--terracotta); border-color:var(--terracotta); color:var(--cream); }
+  .scale-label{ font-size:14.5px; color:var(--chocolate-60); }
+  .scale-option.selected .scale-label{ color:var(--chocolate); }
+  .scale-endnotes{ display:flex; justify-content:space-between; margin-top:14px; font-size:12px; color:var(--chocolate-35); }
+
+  /* ================= NAV ================= */
+  .q-nav{ display:flex; align-items:center; justify-content:space-between; padding:8px 0 60px; }
+
+  @media (max-width:600px){
+    .container, .header-inner{ padding:0 22px; }
+    .q-text{ font-size:24px; }
+  }
+</style>
+<link rel="stylesheet" href="riskproof-shared.css">
+<script src="riskproof-data.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">Risk<span>Proof</span></div>
+      <a class="exit-link" href="#">Выйти из теста</a>
+    </div>
+  </header>
+
+  <div class="container progress-wrap">
+    <div class="progress-meta">
+      <span class="group-label" id="group-label">Внимание · вопрос 1 из 3</span>
+      <span id="progress-count">1 / 12</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:8.3%"></div></div>
+  </div>
+
+  <div class="container question-wrap">
+    <div class="q-number" id="q-number">Вопрос 01</div>
+    <h1 class="q-text" id="q-text">Вчера я провёл(-а) с ребёнком минимум 20 минут вдвоём, без телефонов и без обсуждения школы, оценок или уборки.</h1>
+
+    <div class="scale" id="scale">
+      <!-- заполняется JS -->
+    </div>
+    <div class="scale-endnotes">
+      <span>1 — совсем не согласен(-на)</span>
+      <span>5 — полностью согласен(-на)</span>
+    </div>
+  </div>
+
+  <div class="container q-nav">
+    <button class="btn-text" id="btn-prev">← Назад</button>
+    <button class="btn btn-primary" id="btn-next" disabled>Далее</button>
+  </div>
+
+  <script>
+    const defaultQuestions = [
+      {group:'Внимание', text:'Вчера я провёл(-а) с ребёнком минимум 20 минут вдвоём, без телефонов и без обсуждения школы, оценок или уборки.'},
+      {group:'Внимание', text:'Я знаю, что сейчас больше всего волнует моего ребёнка.'},
+      {group:'Внимание', text:'За последние три дня у нас был разговор дольше 10 минут на тему, которая интересна самому ребёнку, а не мне.'},
+      {group:'Обратная связь', text:'Вчера я чаще хвалил(-а) и поддерживал(-а) ребёнка, чем критиковал(-а) или делал(-а) замечания.'},
+      {group:'Обратная связь', text:'За последние сутки я не использовал(-а) фразы «ты всегда», «ты никогда», «сколько можно».'},
+      {group:'Обратная связь', text:'Когда ребёнок рассказывает о своей проблеме, я сначала слушаю и сочувствую, а потом даю совет.'},
+      {group:'Автономия', text:'У ребёнка есть хотя бы одна зона ответственности, которую я не контролирую.'},
+      {group:'Автономия', text:'Ребёнок имеет право закрыть дверь в свою комнату и не рассказывать о чём-то, если он не хочет.'},
+      {group:'Автономия', text:'Я позволяю ребёнку принимать решения, с которыми не согласен(-на), если это не угрожает его жизни и здоровью.'},
+      {group:'Буферизация стресса', text:'Я знаю, что сейчас является самым сильным источником стресса для моего ребёнка.'},
+      {group:'Буферизация стресса', text:'У нас есть повторяющийся семейный ритуал минимум 3 раза в неделю.'},
+      {group:'Буферизация стресса', text:'Я уверен(-а), что если у ребёнка случится настоящая беда, он придёт ко мне в первую очередь, а не к друзьям.'}
+    ];
+    const testDirection = new URLSearchParams(window.location.search).get('direction') || 'podrostok';
+    const configuredQuestions = window.RiskProofData?.directions?.[testDirection]?.questions;
+    const questions = configuredQuestions || defaultQuestions;
+
+    let current = 0;
+    const answers = new Array(questions.length).fill(null);
+
+    function groupPosition(idx){
+      const group = questions[idx].group;
+      let start = idx; while(start>0 && questions[start-1].group===group) start--;
+      let count = 0; for(let i=start;i<questions.length && questions[i].group===group;i++) count++;
+      return { pos: idx-start+1, count, group };
+    }
+
+    function render(){
+      const q = questions[current];
+      document.getElementById('q-number').textContent = 'Вопрос ' + String(current+1).padStart(2,'0');
+      document.getElementById('q-text').textContent = q.text;
+      document.getElementById('progress-count').textContent = (current+1) + ' / ' + questions.length;
+      document.getElementById('progress-fill').style.width = ((current+1)/questions.length*100) + '%';
+      const gp = groupPosition(current);
+      document.getElementById('group-label').textContent = gp.group + ' · вопрос ' + gp.pos + ' из ' + gp.count;
+
+      const scale = document.getElementById('scale');
+      scale.innerHTML = '';
+      for(let v=1; v<=5; v++){
+        const opt = document.createElement('button');
+        opt.className = 'scale-option' + (answers[current]===v ? ' selected' : '');
+        opt.innerHTML = `<span class="scale-num">${v}</span><span class="scale-label">${scaleLabel(v)}</span>`;
+        opt.addEventListener('click', ()=>{ answers[current]=v; render(); });
+        scale.appendChild(opt);
+      }
+
+      document.getElementById('btn-prev').style.visibility = current===0 ? 'hidden' : 'visible';
+      const btnNext = document.getElementById('btn-next');
+      btnNext.disabled = answers[current]===null;
+      btnNext.textContent = current===questions.length-1 ? 'Получить результат' : 'Далее';
+    }
+
+    function scaleLabel(v){
+      return ['Совсем не согласен(-на)','Скорее не согласен(-на)','Затрудняюсь ответить','Скорее согласен(-на)','Полностью согласен(-на)'][v-1];
+    }
+
+    document.getElementById('btn-next').addEventListener('click', ()=>{
+      if(current < questions.length-1){ current++; render(); }
+      else{
+        const total = answers.reduce((sum, value)=>sum + value, 0);
+        const groupScores = [];
+        for(let i=0; i<4; i++){
+          const part = answers.slice(i*3, i*3+3).reduce((sum, value)=>sum + value, 0);
+          groupScores.push(Math.round(part / 15 * 100));
+        }
+        const weakGroups = groupScores.filter(score=>score < 55).length;
+        const zone = total >= 49 ? 'green' : total >= 37 ? 'yellow' : weakGroups <= 1 ? 'red1' : 'red2';
+        const resultParams = new URLSearchParams({
+          direction:testDirection,
+          zone,
+          score:String(total),
+          scores:groupScores.join(',')
+        });
+        window.location.href = 'riskproof-result-page.html?' + resultParams.toString();
+      }
+    });
+    document.getElementById('btn-prev').addEventListener('click', ()=>{
+      if(current>0){ current--; render(); }
+    });
+
+    render();
+  </script>
+<script src="riskproof-shared.js"></script>
+</body>
+</html>

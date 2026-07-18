@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Внутренняя устойчивость — RiskProof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --cream:        #FDF7F2;
+    --bg:           #FFFAF5;
+    --terracotta:   #B05A3E;
+    --terracotta-d: #904933;
+    --chocolate:    #2B1E1A;
+    --chocolate-60: rgba(43,30,26,0.6);
+    --chocolate-35: rgba(43,30,26,0.35);
+    --chocolate-12: rgba(43,30,26,0.12);
+    --green:        #2D6A4F;
+    --line:         rgba(43,30,26,0.14);
+
+    --serif: 'Cormorant Garamond', serif;
+    --sans:  'Inter', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg);
+    color:var(--chocolate);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img, svg{ display:block; max-width:100%; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible{ outline:2px solid var(--terracotta); outline-offset:3px; }
+
+  .container{ max-width:1240px; margin:0 auto; padding:0 40px; }
+  section{ padding:120px 0; }
+
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    display:inline-block;
+    margin-bottom:20px;
+  }
+  h1,h2,h3{
+    font-family:var(--serif);
+    font-weight:500;
+    color:var(--chocolate);
+    letter-spacing:-0.01em;
+  }
+  h2{ font-size:44px; line-height:1.15; }
+  p{ color:var(--chocolate-60); }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:16px 32px; border-radius:2px;
+    font-family:var(--sans); font-size:14px; font-weight:600;
+    letter-spacing:0.02em; transition:all .25s ease; white-space:nowrap;
+  }
+  .btn-primary{ background:var(--terracotta); color:var(--cream); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-1px); }
+  .btn-ghost{ background:transparent; color:var(--chocolate); border:1px solid var(--chocolate-12); }
+  .btn-ghost:hover{ border-color:var(--terracotta); color:var(--terracotta); }
+  .btn-text{ color:var(--terracotta); font-weight:600; font-size:14px; display:inline-flex; align-items:center; gap:6px; }
+  .btn-text .arrow{ transition:transform .2s ease; }
+  .btn-text:hover .arrow{ transform:translateX(3px); }
+
+  /* ================= HEADER ================= */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,250,245,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+  .logo{ font-family:var(--serif); font-size:22px; font-weight:600; letter-spacing:0.02em; }
+  .logo span{ color:var(--terracotta); }
+  .breadcrumb{ font-size:13px; color:var(--chocolate-35); display:flex; align-items:center; gap:8px; }
+  .breadcrumb a:hover{ color:var(--terracotta); }
+  nav{ display:flex; align-items:center; gap:40px; }
+  nav a{ font-size:14px; font-weight:500; color:var(--chocolate-60); transition:color .2s ease; }
+  nav a:hover{ color:var(--chocolate); }
+  nav .btn{ padding:11px 24px; }
+
+  .section-head{ text-align:center; max-width:640px; margin:0 auto 64px; }
+  .section-head p{ font-size:17px; margin-top:16px; }
+
+  /* ================= HERO ================= */
+  .hero{ padding:90px 0 120px; }
+  .hero-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:80px; align-items:center; }
+  .hero-text h1{
+    font-size:clamp(38px,4.4vw,58px);
+    line-height:1.1; max-width:15ch; margin-bottom:26px;
+  }
+  .hero-text .lede{
+    font-size:19px; line-height:1.65; max-width:48ch;
+    margin-bottom:36px; color:var(--chocolate-60);
+  }
+  .hero-cta-row{ display:flex; align-items:center; gap:28px; margin-bottom:28px; }
+  .hero-note{ font-size:13px; color:var(--chocolate-35); }
+  .hero-tags{ display:flex; gap:10px; flex-wrap:wrap; }
+  .hero-tag{
+    font-size:12.5px; color:var(--chocolate-60);
+    border:1px solid var(--line); border-radius:20px;
+    padding:6px 14px;
+  }
+  .hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
+  .radar-card{
+    background:var(--cream); border:1px solid var(--line);
+    border-radius:4px; padding:36px; width:100%;
+  }
+  .radar-caption{
+    text-align:center; font-size:12px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--chocolate-35); margin-top:18px;
+  }
+
+  /* ================= PROBLEMS ================= */
+  .problems{ background:var(--cream); }
+  .problem-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+  .problem-card{
+    background:var(--bg); border:1px solid var(--line); border-radius:3px;
+    padding:32px 26px; transition:border-color .25s ease, transform .25s ease;
+  }
+  .problem-card:hover{ border-color:var(--terracotta); transform:translateY(-4px); }
+  .problem-mark{
+    font-family:var(--serif); font-size:15px; color:var(--terracotta);
+    width:34px; height:34px; border:1.5px solid var(--terracotta); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; margin-bottom:22px;
+  }
+  .problem-card h4{ font-family:var(--serif); font-size:19px; font-weight:500; margin-bottom:10px; }
+  .problem-card p{ font-size:14px; line-height:1.55; }
+
+  /* ================= FREE TEST BLOCK ================= */
+  .test-block{
+    display:grid; grid-template-columns:1fr 0.85fr; gap:0;
+    border:1px solid var(--line); border-radius:4px; overflow:hidden;
+  }
+  .test-block-info{ padding:56px; }
+  .test-block-info .eyebrow{ margin-bottom:18px; }
+  .test-block-info h3{ font-size:30px; margin-bottom:18px; line-height:1.2; }
+  .test-block-info p{ font-size:15.5px; line-height:1.7; margin-bottom:28px; }
+  .test-meta{ display:flex; gap:32px; margin-bottom:32px; }
+  .test-meta-item .num{ font-family:var(--serif); font-size:28px; color:var(--terracotta); display:block; }
+  .test-meta-item .label{ font-size:12.5px; color:var(--chocolate-35); text-transform:uppercase; letter-spacing:0.06em; }
+  .test-block-params{
+    background:var(--cream); padding:56px 44px;
+    display:flex; flex-direction:column; justify-content:center; gap:22px;
+  }
+  .param-row{ display:flex; align-items:center; gap:14px; }
+  .param-bar-track{ flex-grow:1; height:5px; background:var(--chocolate-12); border-radius:3px; overflow:hidden; }
+  .param-bar-fill{ height:100%; background:var(--terracotta); border-radius:3px; }
+  .param-name{ font-size:13.5px; width:170px; flex-shrink:0; color:var(--chocolate); }
+
+  /* ================= STEPS (real sequence) ================= */
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; position:relative; }
+  .step{ padding:0 32px; position:relative; }
+  .step:not(:first-child)::before{
+    content:""; position:absolute; left:0; top:22px;
+    width:1px; height:40px; background:var(--line);
+  }
+  .step-num{
+    font-family:var(--serif); font-size:44px; color:var(--terracotta);
+    line-height:1; margin-bottom:20px; font-style:italic;
+  }
+  .step h4{ font-size:20px; margin-bottom:10px; }
+  .step p{ font-size:14.5px; line-height:1.6; }
+
+  /* ================= RESULT LIST ================= */
+  .result-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:90px; align-items:center; }
+  .result-list{ display:flex; flex-direction:column; gap:26px; }
+  .result-item{ display:flex; align-items:flex-start; gap:18px; }
+  .result-check{
+    width:26px; height:26px; border-radius:50%; background:var(--terracotta);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-top:2px;
+  }
+  .result-item h4{ font-size:17px; font-weight:500; font-family:var(--sans); color:var(--chocolate); margin-bottom:4px; }
+  .result-item p{ font-size:14px; margin:0; }
+
+  /* ================= PRODUCT LINEUP (shared component) ================= */
+  .product-row{
+    display:grid; grid-template-columns:56px 1fr auto auto; align-items:center;
+    gap:28px; padding:26px 8px; border-bottom:1px solid var(--line);
+  }
+  .product-row:first-child{ border-top:1px solid var(--line); }
+  .product-icon{
+    width:40px; height:40px; border-radius:50%; background:var(--cream);
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-size:16px; color:var(--terracotta);
+  }
+  .product-info .kicker{
+    font-size:11.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--terracotta); margin-bottom:6px;
+  }
+  .product-info h4{ font-family:var(--serif); font-size:21px; font-weight:500; margin-bottom:4px; }
+  .product-info p{ font-size:14px; margin:0; }
+  .product-price{ font-size:15px; font-weight:600; color:var(--chocolate); white-space:nowrap; }
+
+  /* ================= WHY IT WORKS ================= */
+  .why-cream{ background:var(--cream); }
+  .why-pillars-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:28px; margin-top:56px; }
+  .why-pillar-card{ padding:0 24px 0 0; }
+  .why-pillar-card .name{
+    font-family:var(--serif); font-size:20px; font-style:italic; color:var(--terracotta); margin-bottom:12px;
+  }
+  .why-pillar-card p{ font-size:14.5px; line-height:1.6; }
+
+  /* ================= FAQ ================= */
+  .faq-list{ max-width:820px; margin:0 auto; }
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-q{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:26px 4px; font-size:17px; font-family:var(--serif); font-weight:500;
+    cursor:pointer; width:100%; text-align:left;
+  }
+  .faq-q .plus{
+    font-size:22px; color:var(--terracotta); transition:transform .25s ease; flex-shrink:0; margin-left:20px;
+  }
+  .faq-item.open .faq-q .plus{ transform:rotate(45deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .faq-a-inner{ padding:0 4px 26px; font-size:15px; line-height:1.7; max-width:70ch; }
+  .faq-item.open .faq-a{ max-height:220px; }
+
+  /* ================= FINAL CTA ================= */
+  .final-cta{
+    background:var(--chocolate); border-radius:4px;
+    padding:80px 60px; text-align:center;
+  }
+  .final-cta .eyebrow{ color:#E8B8A4; }
+  .final-cta h2{ color:var(--cream); margin-bottom:20px; }
+  .final-cta p{ color:rgba(253,247,242,0.65); max-width:52ch; margin:0 auto 36px; font-size:16px; }
+  .final-cta .btn-primary{ padding:18px 40px; }
+
+  /* ================= FOOTER ================= */
+  footer{ border-top:1px solid var(--line); padding:56px 0; }
+  .footer-inner{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .footer-brand p{ font-size:13.5px; color:var(--chocolate-35); }
+  .footer-links{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .footer-links a{ font-size:13.5px; color:var(--chocolate-60); }
+  .footer-links a:hover{ color:var(--terracotta); }
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width:980px){
+    section{ padding:80px 0; }
+    .hero{ padding:60px 0 80px; }
+    .hero-grid, .result-wrap{ grid-template-columns:1fr; gap:48px; }
+    .hero-visual{ order:-1; max-width:360px; margin:0 auto; }
+    .problem-grid{ grid-template-columns:repeat(2,1fr); }
+    .test-block{ grid-template-columns:1fr; }
+    .steps{ grid-template-columns:1fr; gap:36px; }
+    .step:not(:first-child)::before{ display:none; }
+    .why-pillars-grid{ grid-template-columns:repeat(2,1fr); }
+    nav a:not(.btn){ display:none; }
+    .product-row{ grid-template-columns:40px 1fr; row-gap:8px; }
+    .footer-inner{ flex-direction:column; gap:32px; }
+    .footer-links{ align-items:flex-start; }
+    .final-cta{ padding:56px 28px; }
+  }
+  @media (max-width:600px){
+    .container{ padding:0 22px; }
+    .problem-grid{ grid-template-columns:1fr; }
+    h2{ font-size:32px; }
+  }
+
+</style>
+<link rel="stylesheet" href="riskproof-shared.css">
+<script src="riskproof-data.js"></script>
+</head>
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <div class="container header-inner">
+      <div class="logo">Risk<span>Proof</span></div>
+      <nav>
+        <div class="breadcrumb"><a href="#">Главная</a> / Внутренняя устойчивость</div>
+        <a class="btn btn-ghost" href="#test">Пройти тест</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow">Направление · Внутренняя устойчивость</span>
+        <h1>Перестать выгорать и снова почувствовать опору</h1>
+        <p class="lede">
+          Усталость, которая не проходит после отдыха. Раздражение на близких.
+          Ощущение, что вы держите фасад, а внутри — пусто. Это не приговор.
+          Это диагностика, из которой можно выйти с планом.
+        </p>
+        <div class="hero-cta-row">
+          <a class="btn btn-primary" href="#test">Пройти бесплатный тест</a>
+          <span class="hero-note">3 минуты · результат сразу</span>
+        </div>
+        <div class="hero-tags">
+          <span class="hero-tag">Внимание к себе</span>
+          <span class="hero-tag">Внутренний диалог</span>
+          <span class="hero-tag">Личные границы</span>
+          <span class="hero-tag">Самоподдержка в кризис</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="radar-card">
+          <svg viewBox="0 0 300 300" width="100%">
+            <circle cx="150" cy="150" r="110" fill="none" stroke="var(--chocolate-12)"/>
+            <circle cx="150" cy="150" r="73"  fill="none" stroke="var(--chocolate-12)"/>
+            <circle cx="150" cy="150" r="37"  fill="none" stroke="var(--chocolate-12)"/>
+            <line x1="150" y1="40"  x2="150" y2="260" stroke="var(--chocolate-12)"/>
+            <line x1="40"  y1="150" x2="260" y2="150" stroke="var(--chocolate-12)"/>
+            <polygon points="150,102 193,150 150,232 112,150"
+                     fill="rgba(176,90,62,0.16)" stroke="var(--terracotta)" stroke-width="2"/>
+            <circle cx="150" cy="102" r="4" fill="var(--terracotta)"/>
+            <circle cx="193" cy="150" r="4" fill="var(--terracotta)"/>
+            <circle cx="150" cy="232" r="4" fill="var(--terracotta)"/>
+            <circle cx="112" cy="150" r="4" fill="var(--terracotta)"/>
+            <text x="150" y="28"  text-anchor="middle" font-family="Inter" font-size="12" fill="var(--chocolate)" opacity="0.7">Внимание к себе</text>
+            <text x="275" y="154" text-anchor="start"  font-family="Inter" font-size="12" fill="var(--chocolate)" opacity="0.7">Внутр. диалог</text>
+            <text x="150" y="285" text-anchor="middle" font-family="Inter" font-size="12" fill="var(--chocolate)" opacity="0.7">Границы и выбор</text>
+            <text x="25"  y="154" text-anchor="end"    font-family="Inter" font-size="12" fill="var(--chocolate)" opacity="0.7">Самоподдержка</text>
+          </svg>
+          <div class="radar-caption">Пример результата теста</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROBLEMS ================= -->
+  <section class="problems">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Знакомая ситуация?</span>
+        <h2>Какие проблемы помогает решить система</h2>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-mark">01</div>
+          <h4>Просыпаетесь уже уставшей</h4>
+          <p>Сон не восстанавливает силы. Усталость становится фоном, который не отпускает.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-mark">02</div>
+          <h4>Срываетесь на близких</h4>
+          <p>Раздражение выходит там, где не должно — на детей, партнёра, случайные мелочи.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-mark">03</div>
+          <h4>Не умеете сказать «нет»</h4>
+          <p>Соглашаетесь, даже когда внутри всё против. Потом злитесь на себя за это.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-mark">04</div>
+          <h4>Не знаете, на что опереться</h4>
+          <p>Когда плохо — не понимаете, кто или что может вас поддержать прямо сейчас.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FREE TEST ================= -->
+  <section id="test">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Начните здесь</span>
+        <h2>Бесплатный тест «Индекс внутренней устойчивости»</h2>
+      </div>
+      <div class="test-block">
+        <div class="test-block-info">
+          <span class="eyebrow" style="margin-bottom:14px;">Диагностика</span>
+          <h3>Узнайте, где сейчас ваша внутренняя опора</h3>
+          <p>12 честных вопросов о внимании к себе, внутреннем диалоге, личных
+             границах и способности поддержать себя в кризис.</p>
+          <div class="test-meta">
+            <div class="test-meta-item"><span class="num">12</span><span class="label">Вопросов</span></div>
+            <div class="test-meta-item"><span class="num">4</span><span class="label">Параметра</span></div>
+            <div class="test-meta-item"><span class="num">3′</span><span class="label">Минуты</span></div>
+          </div>
+          <a class="btn btn-primary" href="#">Пройти тест бесплатно</a>
+        </div>
+        <div class="test-block-params">
+          <div class="param-row"><div class="param-name">Внимание к себе</div><div class="param-bar-track"><div class="param-bar-fill" style="width:68%"></div></div></div>
+          <div class="param-row"><div class="param-name">Внутренний диалог</div><div class="param-bar-track"><div class="param-bar-fill" style="width:40%"></div></div></div>
+          <div class="param-row"><div class="param-name">Границы и выбор</div><div class="param-bar-track"><div class="param-bar-fill" style="width:75%"></div></div></div>
+          <div class="param-row"><div class="param-name">Самоподдержка</div><div class="param-bar-track"><div class="param-bar-fill" style="width:52%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW DIAGNOSIS WORKS (real sequence) ================= -->
+  <section class="why-cream">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Как проходит диагностика</span>
+        <h2>Три коротких шага</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h4>Отвечаете на 12 вопросов</h4>
+          <p>По шкале от 1 до 5 — честно, без «социально правильных» ответов.
+             Это займёт около трёх минут.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h4>Получаете карту устойчивости</h4>
+          <p>Результат по четырём параметрам сразу на экране — видно, где опора
+             крепкая, а где — зона риска.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h4>Получаете расшифровку и рекомендацию</h4>
+          <p>На почту приходит объяснение результата и следующий шаг, подходящий
+             именно вашей зоне риска.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT YOU GET AFTER TEST ================= -->
+  <section>
+    <div class="container result-wrap">
+      <div class="radar-card" style="background:var(--cream); border:1px solid var(--line); border-radius:4px; padding:36px;">
+        <svg viewBox="0 0 300 300" width="100%">
+          <circle cx="150" cy="150" r="110" fill="none" stroke="var(--chocolate-12)"/>
+          <circle cx="150" cy="150" r="73"  fill="none" stroke="var(--chocolate-12)"/>
+          <circle cx="150" cy="150" r="37"  fill="none" stroke="var(--chocolate-12)"/>
+          <line x1="150" y1="40"  x2="150" y2="260" stroke="var(--chocolate-12)"/>
+          <line x1="40"  y1="150" x2="260" y2="150" stroke="var(--chocolate-12)"/>
+          <polygon points="150,100 190,150 150,230 108,150"
+                   fill="rgba(176,90,62,0.16)" stroke="var(--terracotta)" stroke-width="2"/>
+          <circle cx="150" cy="100" r="4" fill="var(--terracotta)"/>
+          <circle cx="190" cy="150" r="4" fill="var(--terracotta)"/>
+          <circle cx="150" cy="230" r="4" fill="var(--terracotta)"/>
+          <circle cx="108" cy="150" r="4" fill="var(--terracotta)"/>
+        </svg>
+      </div>
+      <div>
+        <span class="eyebrow">После теста</span>
+        <h2 style="margin-bottom:30px;">Что вы получите</h2>
+        <div class="result-list">
+          <div class="result-item">
+            <div class="result-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div><h4>Радар устойчивости</h4><p>Наглядная карта по четырём параметрам вашего внутреннего состояния.</p></div>
+          </div>
+          <div class="result-item">
+            <div class="result-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div><h4>Зона по каждому параметру</h4><p>Устойчивость, внимание или риск — конкретно про ваше состояние сейчас.</p></div>
+          </div>
+          <div class="result-item">
+            <div class="result-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div><h4>Персональная рекомендация</h4><p>Следующий шаг, который подходит именно вашему результату.</p></div>
+          </div>
+          <div class="result-item">
+            <div class="result-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div><h4>Письмо с расшифровкой</h4><p>Результат приходит на почту, чтобы вернуться к нему в спокойный момент.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRODUCT LINEUP ================= -->
+  <section class="why-cream" id="products">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Если нужно больше, чем тест</span>
+        <h2>Продуктовая линейка направления</h2>
+      </div>
+
+      <div class="product-row">
+        <div class="product-icon">01</div>
+        <div class="product-info"><span class="kicker">Курс</span><h4>7 дней устойчивости</h4><p>Семь уроков с практиками, метафорами и заданиями на каждый день</p></div>
+        <div class="product-price">3 900 ₽</div>
+        <a class="btn btn-ghost" href="#">Подробнее</a>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">02</div>
+        <div class="product-info"><span class="kicker">Персональный разбор</span><h4>Разбор состояния</h4><p>Анкета, письменный план, видеопояснение</p></div>
+        <div class="product-price">9 900 ₽</div>
+        <a class="btn btn-ghost" href="#">Заказать</a>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">03</div>
+        <div class="product-info"><span class="kicker">Стратегическая сессия</span><h4>Карта внутренних рисков и план восстановления</h4><p>Две встречи по 60 минут</p></div>
+        <div class="product-price">14 900 ₽</div>
+        <a class="btn btn-ghost" href="#">Подробнее</a>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">04</div>
+        <div class="product-info"><span class="kicker">Индивидуальная работа</span><h4>Месяц тишины и ясности</h4><p>4 встречи, ежедневная поддержка в Telegram</p></div>
+        <div class="product-price">Сумма обсуждается</div>
+        <a class="btn btn-ghost" href="#">Подробнее</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHY IT WORKS ================= -->
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Почему это работает</span>
+        <h2>На стыке психологии привязанности и риск-менеджмента</h2>
+      </div>
+      <div class="why-pillars-grid">
+        <div class="why-pillar-card">
+          <div class="name">Тина Брайсон</div>
+          <p>Когда мы игнорируем свои потребности, префронтальная кора отключается — мы теряем самоконтроль.</p>
+        </div>
+        <div class="why-pillar-card">
+          <div class="name">Гордон Ньюфелд</div>
+          <p>Человек, у которого нет доступа к собственным чувствам, не может быть в настоящем контакте с другими.</p>
+        </div>
+        <div class="why-pillar-card">
+          <div class="name">Джон Готтман</div>
+          <p>Баланс 5:1 нужен не только в браке — на одно критическое слово к себе нужно пять поддерживающих.</p>
+        </div>
+        <div class="why-pillar-card">
+          <div class="name">Людмила Петрановская</div>
+          <p>Родитель, не умеющий защищать свои границы, не может научить этому детей.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="why-cream">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Частые вопросы</span>
+        <h2>FAQ</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item open">
+          <button class="faq-q">Это про выгорание или про лень?<span class="plus">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Про выгорание. Хроническая усталость и потеря опоры — это не
+             лень и не слабость характера, а результат истощённых ресурсов. Система помогает
+             увидеть, где именно образовалась «протечка», и восстановить её системно.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Сколько времени занимает курс в день?<span class="plus">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">15–30 минут в день на семь дней. Каждый день — одна метафора,
+             один факт из науки, одно конкретное задание.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Это заменяет психотерапию?<span class="plus">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Нет. RiskProof — авторская методология, а не медицинская или
+             психологическая услуга. При остром кризисе рекомендуем обратиться к
+             квалифицированному специалисту.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Мои ответы останутся конфиденциальными?<span class="plus">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Да. Результаты теста и анкеты видите только вы и Ольга —
+             они не публикуются и не передаются третьим лицам.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section>
+    <div class="container">
+      <div class="final-cta">
+        <span class="eyebrow">Начните с диагностики</span>
+        <h2>Узнайте, где сейчас ваша опора</h2>
+        <p>Три минуты — и вы увидите карту своей внутренней устойчивости,
+           а не будете гадать, почему сил больше нет.</p>
+        <a class="btn btn-primary" href="#test">Пройти тест бесплатно</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo">Risk<span>Proof</span></div>
+        <p>Система управления личными рисками · 2026</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Telegram-канал</a>
+        <a href="#">Публичная оферта</a>
+        <a href="#">Политика обработки данных</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.faq-q').forEach(q=>{
+      q.addEventListener('click', ()=>{
+        const item = q.closest('.faq-item');
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+        if(!wasOpen) item.classList.add('open');
+      });
+    });
+  </script>
+
+<script src="riskproof-shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Чек-лист «7 красных флагов» — RiskProof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF7F2; --bg:#FFFAF5; --terracotta:#B05A3E; --terracotta-d:#904933;
+    --chocolate:#2B1E1A; --chocolate-60:rgba(43,30,26,0.6); --chocolate-35:rgba(43,30,26,0.35);
+    --chocolate-12:rgba(43,30,26,0.12); --green:#2D6A4F; --line:rgba(43,30,26,0.14);
+    --serif:'Cormorant Garamond', serif; --sans:'Inter', sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{ background:var(--bg); color:var(--chocolate); font-family:var(--sans); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible{ outline:2px solid var(--terracotta); outline-offset:3px; }
+  input{ font-family:inherit; }
+  .container{ max-width:1100px; margin:0 auto; padding:0 40px; }
+  section{ padding:96px 0; }
+  .eyebrow{ font-size:13px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--terracotta); display:inline-block; margin-bottom:20px; }
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; color:var(--chocolate); letter-spacing:-0.01em; }
+  h2{ font-size:36px; line-height:1.2; }
+  p{ color:var(--chocolate-60); }
+  .btn{ display:inline-flex; align-items:center; gap:10px; padding:17px 34px; border-radius:2px; font-size:14px; font-weight:600; letter-spacing:0.02em; transition:all .25s ease; white-space:nowrap; }
+  .btn-primary{ background:var(--terracotta); color:var(--cream); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-1px); }
+  .section-head{ text-align:center; max-width:620px; margin:0 auto 56px; }
+  .section-head p{ font-size:16.5px; margin-top:14px; }
+
+  header{ position:sticky; top:0; z-index:50; background:rgba(255,250,245,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:20px 0; }
+  .logo{ font-family:var(--serif); font-size:21px; font-weight:600; }
+  .logo span{ color:var(--terracotta); }
+  .breadcrumb{ font-size:13px; color:var(--chocolate-35); }
+
+  /* ================= DEMO SWITCHER ================= */
+  .demo-bar{ background:var(--chocolate); color:var(--cream); padding:14px 0; font-size:13px; }
+  .demo-bar .container{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .demo-bar .label{ color:rgba(253,247,242,0.5); }
+  .demo-pill{ padding:8px 16px; border-radius:20px; border:1px solid rgba(253,247,242,0.25); color:rgba(253,247,242,0.75); font-size:13px; font-weight:500; transition:all .2s ease; }
+  .demo-pill.active{ background:var(--cream); color:var(--chocolate); border-color:var(--cream); }
+
+  /* ================= HERO ================= */
+  .checklist-hero{ padding:70px 0 90px; }
+  .hero-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:70px; align-items:center; }
+  .hero-kicker{ font-size:13px; color:var(--chocolate-35); margin-bottom:16px; }
+  .hero-text h1{ font-size:clamp(32px,3.8vw,46px); line-height:1.18; margin-bottom:22px; max-width:16ch; }
+  .hero-text .lede{ font-size:17.5px; line-height:1.7; max-width:50ch; margin-bottom:30px; }
+  .hero-meta-row{ display:flex; gap:32px; margin-bottom:0; }
+  .hero-meta-item .num{ font-family:var(--serif); font-size:24px; color:var(--terracotta); display:block; }
+  .hero-meta-item .label{ font-size:11.5px; color:var(--chocolate-35); text-transform:uppercase; letter-spacing:0.06em; }
+
+  .pdf-card{
+    background:var(--cream); border:1px solid var(--line); border-radius:4px; padding:40px;
+    text-align:center;
+  }
+  .pdf-mockup{
+    aspect-ratio:3/4; background:var(--bg); border:1px solid var(--line); border-radius:3px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    margin-bottom:24px; padding:20px;
+  }
+  .pdf-mockup .pdf-icon{ width:40px; height:40px; border-radius:50%; border:1.5px solid var(--terracotta); display:flex; align-items:center; justify-content:center; }
+  .pdf-mockup .pdf-title{ font-family:var(--serif); font-size:15px; text-align:center; color:var(--chocolate-60); max-width:20ch; line-height:1.4; }
+  .free-tag{ font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--green); margin-bottom:14px; display:block; }
+
+  /* ================= EMAIL FORM (лид-магнит) ================= */
+  .email-form-row{ display:flex; gap:0; margin-bottom:12px; }
+  .email-form-row input{
+    flex-grow:1; padding:15px 18px; border:1px solid var(--chocolate-12); border-right:none;
+    border-radius:2px 0 0 2px; font-size:14.5px; background:var(--bg); color:var(--chocolate);
+  }
+  .email-form-row input::placeholder{ color:var(--chocolate-35); }
+  .email-form-row .btn-primary{ border-radius:0 2px 2px 0; padding:15px 22px; }
+  .form-note{ font-size:12px; color:var(--chocolate-35); }
+
+  /* ================= FLAGS LIST ================= */
+  .flags-cream{ background:var(--cream); }
+  .flags-list{ display:flex; flex-direction:column; gap:0; }
+  .flag-row{
+    display:grid; grid-template-columns:52px 1fr; gap:24px; align-items:flex-start;
+    padding:24px 8px; border-bottom:1px solid var(--line);
+  }
+  .flag-row:first-child{ border-top:1px solid var(--line); }
+  .flag-num{
+    width:36px; height:36px; border-radius:50%; background:var(--bg); border:1.5px solid var(--terracotta);
+    display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:15px; color:var(--terracotta);
+  }
+  .flag-row h4{ font-family:var(--serif); font-size:18px; font-weight:500; margin-bottom:6px; }
+  .flag-row p{ font-size:14px; margin:0; }
+
+  /* ================= DECODE ZONES ================= */
+  .decode-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .decode-card{ border-radius:4px; padding:24px 22px; border:1.5px solid; }
+  .decode-card.green{ background:rgba(45,106,79,0.06); border-color:var(--green); }
+  .decode-card.amber{ background:rgba(184,134,58,0.08); border-color:#B8863A; }
+  .decode-card.red{ background:rgba(166,67,47,0.06); border-color:#A6432F; }
+  .decode-card h4{ font-family:var(--serif); font-size:17px; font-weight:500; margin-bottom:8px; }
+  .decode-card p{ font-size:13.5px; margin:0; }
+
+  /* ================= WHO FOR ================= */
+  .who-row{ display:flex; align-items:center; gap:18px; padding:20px 0; border-bottom:1px solid var(--line); }
+  .who-row:first-child{ border-top:1px solid var(--line); }
+
+  /* ================= FINAL CTA ================= */
+  .final-cta{ background:var(--chocolate); border-radius:4px; padding:64px 56px; text-align:center; }
+  .final-cta .eyebrow{ color:#E8B8A4; }
+  .final-cta h2{ color:var(--cream); margin-bottom:14px; }
+  .final-cta p{ color:rgba(253,247,242,0.6); max-width:48ch; margin:0 auto 28px; }
+
+  footer{ border-top:1px solid var(--line); padding:50px 0; }
+  .footer-inner{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .footer-brand p{ font-size:13.5px; color:var(--chocolate-35); }
+  .footer-links{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .footer-links a{ font-size:13.5px; color:var(--chocolate-60); }
+
+  @media (max-width:900px){
+    section{ padding:60px 0; }
+    .hero-grid{ grid-template-columns:1fr; gap:36px; }
+    .hero-visual{ order:-1; max-width:280px; margin:0 auto; }
+    .decode-grid{ grid-template-columns:1fr; }
+    .footer-inner{ flex-direction:column; gap:24px; }
+    .footer-links{ align-items:flex-start; }
+  }
+</style>
+<link rel="stylesheet" href="riskproof-shared.css">
+<script src="riskproof-data.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <div class="logo">Risk<span>Proof</span></div>
+      <div class="breadcrumb">Главная / Подросток / <strong style="color:var(--chocolate)" id="crumb-current">Чек-лист</strong></div>
+    </div>
+  </header>
+
+  <div class="demo-bar">
+    <div class="container">
+      <span class="label">Универсальный шаблон — переключить чек-лист:</span>
+      <button class="demo-pill active" data-type="podrostok">Подросток</button>
+      <button class="demo-pill" data-type="finance">Финансы</button>
+      <button class="demo-pill" data-type="proforientation">Профориентация</button>
+    </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="checklist-hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <div class="hero-kicker" id="hero-direction">Направление · Отношения с подростком</div>
+        <span class="eyebrow">Бесплатный чек-лист</span>
+        <h1 id="checklist-title">7 красных флагов</h1>
+        <p class="lede" id="checklist-lede">Признаки потери контакта с подростком, которые родители
+           часто пропускают. Проверьте себя за 2 минуты.</p>
+        <div class="hero-meta-row">
+          <div class="hero-meta-item"><span class="num" id="pages-count">4</span><span class="label">Страницы PDF</span></div>
+          <div class="hero-meta-item"><span class="num" id="flags-count">7</span><span class="label">Пунктов</span></div>
+          <div class="hero-meta-item"><span class="num">2′</span><span class="label">Минуты</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="pdf-card">
+          <span class="free-tag">Бесплатно</span>
+          <div class="pdf-mockup">
+            <div class="pdf-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--terracotta)" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            </div>
+            <div class="pdf-title" id="pdf-mockup-title">7 красных флагов: как понять, что контакт с подростком под угрозой</div>
+          </div>
+          <div class="email-form-row">
+            <input type="email" placeholder="Ваш email">
+            <button class="btn btn-primary">Скачать</button>
+          </div>
+          <p class="form-note">PDF придёт на почту сразу после отправки</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FLAGS LIST ================= -->
+  <section class="flags-cream">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Что внутри</span>
+        <h2 id="flags-heading">Семь признаков, которые стоит проверить</h2>
+      </div>
+      <div class="flags-list" id="flags-list"><!-- заполняется JS --></div>
+    </div>
+  </section>
+
+  <!-- ================= DECODE ZONES ================= -->
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Как читать результат</span>
+        <h2>Три зоны</h2>
+      </div>
+      <div class="decode-grid" id="decode-grid"><!-- заполняется JS --></div>
+    </div>
+  </section>
+
+  <!-- ================= WHO FOR ================= -->
+  <section class="flags-cream">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Кому пригодится</span>
+        <h2>Для кого этот чек-лист</h2>
+      </div>
+      <div id="who-list"><!-- заполняется JS --></div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section>
+    <div class="container">
+      <div class="final-cta">
+        <span class="eyebrow">Дальше — глубже</span>
+        <h2 id="cross-title">Хотите полную картину?</h2>
+        <p id="cross-lede">Чек-лист — это быстрая проверка. Для полной диагностики
+           по 4 параметрам пройдите бесплатный тест — 3 минуты и персональный результат.</p>
+        <a class="btn btn-primary" href="#" id="cross-cta">Пройти тест бесплатно</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-brand"><div class="logo">Risk<span>Proof</span></div><p>Система управления личными рисками · 2026</p></div>
+      <div class="footer-links"><a href="#">Telegram-канал</a><a href="#">Публичная оферта</a><a href="#">Политика обработки данных</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const checklists = {
+      podrostok:{
+        direction:'Направление · Отношения с подростком', crumb:'Чек-лист',
+        title:'7 красных флагов',
+        lede:'Признаки потери контакта с подростком, которые родители часто пропускают. Проверьте себя за 2 минуты.',
+        pages:'4', count:'7',
+        mockupTitle:'7 красных флагов: как понять, что контакт с подростком под угрозой',
+        flagsHeading:'Семь признаков, которые стоит проверить',
+        flags:[
+          {t:'Ребёнок перестал рассказывать о себе', d:'На вопросы «как дела» отвечает «нормально» и закрывает тему.'},
+          {t:'Любой разговор превращается в спор', d:'Даже нейтральная фраза вызывает агрессию или защитную реакцию.'},
+          {t:'Вы чаще критикуете, чем поддерживаете', d:'За день больше замечаний, чем добрых слов.'},
+          {t:'Ребёнок предпочитает друзей или одиночество', d:'Отказывается от совместных дел, закрывается в комнате.'},
+          {t:'Вы не знаете его друзей', d:'Круг общения — «чёрный ящик», вы не в курсе, кто на него влияет.'},
+          {t:'Нет семейных ритуалов', d:'Совместные ужины, прогулки, чай перед сном — реже раза в неделю.'},
+          {t:'Не уверены, что придёт к вам в беде', d:'Не знаете, обратится ли он к вам в трудную минуту.'}
+        ],
+        decode:[
+          {zone:'green', title:'0–1 флаг', text:'Зелёная зона. Контакт в порядке, продолжайте в том же духе.'},
+          {zone:'amber', title:'2–3 флага', text:'Жёлтая зона. Есть первые признаки ослабления — стоит обратить внимание.'},
+          {zone:'red', title:'4 и более', text:'Красная зона. Риск потери контакта высокий, не откладывайте.'}
+        ],
+        who:['Родителям детей 10–17 лет, которые чувствуют растущую дистанцию','Тем, кто хочет проверить себя объективно, а не полагаться на ощущения','Тем, кто пока не готов к тесту, но хочет быстрый первый ориентир'],
+        crossTitle:'Хотите полную картину?',
+        crossLede:'Чек-лист — это быстрая проверка. Для полной диагностики по 4 параметрам пройдите бесплатный тест — 3 минуты и персональный результат.',
+        crossCta:'Пройти тест бесплатно'
+      },
+      finance:{
+        direction:'Направление · Финансовая стабильность', crumb:'Чек-лист',
+        title:'5 финансовых привычек',
+        lede:'Привычки, которые разрушают вашу финансовую устойчивость. Проверьте себя за 2 минуты.',
+        pages:'2', count:'5',
+        mockupTitle:'5 финансовых привычек, которые разрушают вашу устойчивость',
+        flagsHeading:'Пять привычек, которые стоит проверить',
+        flags:[
+          {t:'Не знаете, сколько тратите за месяц', d:'Деньги уходят, а вы не можете вспомнить, на что.'},
+          {t:'Нет подушки на непредвиденное', d:'Любая неожиданная трата вызывает стресс и займы.'},
+          {t:'Импульсивные покупки', d:'Заходите за одной вещью, уходите с пятью.'},
+          {t:'Нет бюджета и финансовых целей', d:'Деньги приходят и уходят без понимания, на что вы копите.'},
+          {t:'Избегаете разговоров о деньгах', d:'Неловко обсуждать зарплату или финансы с партнёром.'}
+        ],
+        decode:[
+          {zone:'green', title:'0–1 привычка', text:'Зелёная зона. Финансовое поведение в целом здоровое.'},
+          {zone:'amber', title:'2–3 привычки', text:'Жёлтая зона. Путь к нестабильности — начните с самой разрушительной.'},
+          {zone:'red', title:'4–5 привычек', text:'Красная зона. Финансовое положение уязвимо, не откладывайте.'}
+        ],
+        who:['Тем, кто чувствует тревогу при взгляде на баланс карты','Тем, кто хочет навести порядок в деньгах без стыда и чувства вины','Тем, кто пока не готов к тесту, но хочет быстрый первый ориентир'],
+        crossTitle:'Хотите полную картину?',
+        crossLede:'Чек-лист — это быстрая проверка. Для полной диагностики по 4 параметрам пройдите бесплатный тест — 3 минуты и персональный результат.',
+        crossCta:'Пройти тест бесплатно'
+      },
+      proforientation:{
+        direction:'Направление · Профориентация и самоопределение', crumb:'Чек-лист',
+        title:'7 красных флагов',
+        lede:'Что мешает выбрать профессию — признаки, которые стоит заметить сейчас. Проверьте себя за 2 минуты.',
+        pages:'3', count:'7',
+        mockupTitle:'7 красных флагов: что мешает выбрать профессию',
+        flagsHeading:'Семь признаков, которые стоит проверить',
+        flags:[
+          {t:'Не знаете, чего хотите', d:'Все варианты кажутся либо скучными, либо недостижимыми.'},
+          {t:'Выбираете то, что посоветовали', d:'Родители сказали — вы согласились, но внутри пустота.'},
+          {t:'Боитесь ошибиться', d:'Кажется, что выбор профессии — это на всю жизнь.'},
+          {t:'Не знаете, что востребовано', d:'Не понимаете, какие профессии нужны через 5 лет.'},
+          {t:'Не верите, что можно зарабатывать на любимом деле', d:'Хобби — для души, работа — это «надо».'},
+          {t:'Откладываете решение', d:'Каждый раз находите причину не думать об этом сейчас.'},
+          {t:'Не знаете своих сильных сторон', d:'Теряетесь, когда спрашивают, что вы умеете.'}
+        ],
+        decode:[
+          {zone:'green', title:'0–1 флаг', text:'Зелёная зона. Вы на верном пути, продолжайте исследовать себя.'},
+          {zone:'amber', title:'2–3 флага', text:'Жёлтая зона. Есть препятствия, но они преодолимы.'},
+          {zone:'red', title:'4 и более', text:'Красная зона. Риск выбора, о котором пожалеете — не откладывайте.'}
+        ],
+        who:['Старшеклассникам и студентам перед выбором пути','Взрослым, которые задумались о смене профессии','Тем, кто пока не готов к тесту, но хочет быстрый первый ориентир'],
+        crossTitle:'Хотите полную картину?',
+        crossLede:'Чек-лист — это быстрая проверка. Для полной диагностики по 4 параметрам пройдите бесплатный тест — 3 минуты и персональный результат.',
+        crossCta:'Пройти тест бесплатно'
+      }
+    };
+
+    const zoneColor = {green:'var(--green)', amber:'#B8863A', red:'#A6432F'};
+    const check = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--terracotta)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>`;
+
+    function render(key){
+      const c = checklists[key];
+      document.querySelectorAll('.demo-pill').forEach(p=>p.classList.toggle('active', p.dataset.type===key));
+      document.getElementById('hero-direction').textContent = c.direction;
+      document.getElementById('crumb-current').textContent = c.crumb;
+      document.getElementById('checklist-title').textContent = c.title;
+      document.getElementById('checklist-lede').textContent = c.lede;
+      document.getElementById('pages-count').textContent = c.pages;
+      document.getElementById('flags-count').textContent = c.count;
+      document.getElementById('pdf-mockup-title').textContent = c.mockupTitle;
+      document.getElementById('flags-heading').textContent = c.flagsHeading;
+      document.getElementById('flags-list').innerHTML = c.flags.map((f,i)=>`
+        <div class="flag-row">
+          <div class="flag-num">${i+1}</div>
+          <div><h4>${f.t}</h4><p>${f.d}</p></div>
+        </div>`).join('');
+      document.getElementById('decode-grid').innerHTML = c.decode.map(d=>`
+        <div class="decode-card ${d.zone}"><h4>${d.title}</h4><p>${d.text}</p></div>`).join('');
+      document.getElementById('who-list').innerHTML = c.who.map(w=>`
+        <div class="who-row">${check}<span style="font-size:14.5px; color:var(--chocolate-60);">${w}</span></div>`).join('');
+      document.getElementById('cross-title').textContent = c.crossTitle;
+      document.getElementById('cross-lede').textContent = c.crossLede;
+      document.getElementById('cross-cta').textContent = c.crossCta;
+    }
+
+    document.querySelectorAll('.demo-pill').forEach(btn=>{
+      btn.addEventListener('click', ()=>render(btn.dataset.type));
+    });
+
+    render('podrostok');
+  </script>
+
+<script src="riskproof-shared.js"></script>
+</body>
+</html>

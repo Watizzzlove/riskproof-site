@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Персональный разбор ситуации — RiskProof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF7F2; --bg:#FFFAF5; --terracotta:#B05A3E; --terracotta-d:#904933;
+    --chocolate:#2B1E1A; --chocolate-60:rgba(43,30,26,0.6); --chocolate-35:rgba(43,30,26,0.35);
+    --chocolate-12:rgba(43,30,26,0.12); --line:rgba(43,30,26,0.14);
+    --serif:'Cormorant Garamond', serif; --sans:'Inter', sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{ background:var(--bg); color:var(--chocolate); font-family:var(--sans); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible{ outline:2px solid var(--terracotta); outline-offset:3px; }
+  .container{ max-width:1100px; margin:0 auto; padding:0 40px; }
+  section{ padding:96px 0; }
+  .eyebrow{ font-size:13px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--terracotta); display:inline-block; margin-bottom:20px; }
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; color:var(--chocolate); letter-spacing:-0.01em; }
+  h2{ font-size:36px; line-height:1.2; }
+  p{ color:var(--chocolate-60); }
+  .btn{ display:inline-flex; align-items:center; gap:10px; padding:17px 34px; border-radius:2px; font-size:14px; font-weight:600; letter-spacing:0.02em; transition:all .25s ease; white-space:nowrap; }
+  .btn-primary{ background:var(--terracotta); color:var(--cream); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-1px); }
+  .section-head{ text-align:center; max-width:620px; margin:0 auto 56px; }
+  .section-head p{ font-size:16.5px; margin-top:14px; }
+
+  header{ position:sticky; top:0; z-index:50; background:rgba(255,250,245,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:20px 0; }
+  .logo{ font-family:var(--serif); font-size:21px; font-weight:600; }
+  .logo span{ color:var(--terracotta); }
+  .breadcrumb{ font-size:13px; color:var(--chocolate-35); }
+
+  /* ================= DEMO SWITCHER ================= */
+  .demo-bar{ background:var(--chocolate); color:var(--cream); padding:14px 0; font-size:13px; }
+  .demo-bar .container{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .demo-bar .label{ color:rgba(253,247,242,0.5); }
+  .demo-pill{ padding:8px 16px; border-radius:20px; border:1px solid rgba(253,247,242,0.25); color:rgba(253,247,242,0.75); font-size:13px; font-weight:500; transition:all .2s ease; }
+  .demo-pill.active{ background:var(--cream); color:var(--chocolate); border-color:var(--cream); }
+
+  /* ================= HERO ================= */
+  .offer-hero{ padding:70px 0 90px; }
+  .hero-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:70px; align-items:start; }
+  .hero-kicker{ font-size:13px; color:var(--chocolate-35); margin-bottom:16px; }
+  .hero-text h1{ font-size:clamp(30px,3.6vw,44px); line-height:1.18; margin-bottom:22px; max-width:17ch; }
+  .hero-text .lede{ font-size:17.5px; line-height:1.7; max-width:52ch; margin-bottom:30px; }
+
+  .price-card{ background:var(--cream); border:1px solid var(--line); border-radius:4px; padding:40px; position:sticky; top:100px; }
+  .price-card .price{ font-family:var(--serif); font-size:40px; margin-bottom:6px; }
+  .price-card .price-note{ font-size:13px; color:var(--chocolate-35); margin-bottom:26px; }
+  .price-includes{ display:flex; flex-direction:column; gap:14px; margin-bottom:28px; }
+  .price-includes .item{ display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--chocolate-60); }
+  .price-includes svg{ flex-shrink:0; margin-top:3px; }
+  .price-card .btn{ width:100%; justify-content:center; }
+  .price-guarantee{ font-size:12px; color:var(--chocolate-35); text-align:center; margin-top:16px; }
+
+  /* ================= WHAT'S INCLUDED ================= */
+  .includes-cream{ background:var(--cream); }
+  .includes-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .includes-card{ background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:32px 26px; }
+  .includes-num{ font-family:var(--serif); font-style:italic; font-size:26px; color:var(--terracotta); margin-bottom:18px; }
+  .includes-card h4{ font-family:var(--serif); font-size:19px; font-weight:500; margin-bottom:10px; }
+  .includes-card p{ font-size:14px; margin:0; }
+
+  /* ================= STEPS ================= */
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; position:relative; }
+  .step{ padding:0 32px; position:relative; }
+  .step:not(:first-child)::before{ content:""; position:absolute; left:0; top:22px; width:1px; height:40px; background:var(--line); }
+  .step-num{ font-family:var(--serif); font-size:40px; color:var(--terracotta); line-height:1; margin-bottom:18px; font-style:italic; }
+  .step h4{ font-size:19px; margin-bottom:8px; }
+  .step p{ font-size:14px; line-height:1.6; }
+
+  /* ================= FIT ================= */
+  .fit-grid{ display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+  .fit-col h4{ font-size:15px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:20px; color:var(--chocolate-35); font-family:var(--sans); font-weight:600; }
+  .fit-item{ display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; font-size:15px; color:var(--chocolate-60); }
+  .fit-item svg{ flex-shrink:0; margin-top:3px; }
+
+  /* ================= FINAL CTA ================= */
+  .final-cta{ background:var(--chocolate); border-radius:4px; padding:70px 60px; text-align:center; }
+  .final-cta .eyebrow{ color:#E8B8A4; }
+  .final-cta h2{ color:var(--cream); margin-bottom:14px; }
+  .final-cta .price{ font-family:var(--serif); font-size:30px; color:var(--cream); margin-bottom:24px; }
+
+  footer{ border-top:1px solid var(--line); padding:50px 0; }
+  .footer-inner{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .footer-brand p{ font-size:13.5px; color:var(--chocolate-35); }
+  .footer-links{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .footer-links a{ font-size:13.5px; color:var(--chocolate-60); }
+
+  @media (max-width:900px){
+    section{ padding:60px 0; }
+    .hero-grid{ grid-template-columns:1fr; gap:36px; }
+    .price-card{ position:static; }
+    .includes-grid, .steps{ grid-template-columns:1fr; gap:28px; }
+    .step:not(:first-child)::before{ display:none; }
+    .fit-grid{ grid-template-columns:1fr; gap:36px; }
+    .footer-inner{ flex-direction:column; gap:24px; }
+    .footer-links{ align-items:flex-start; }
+  }
+</style>
+<link rel="stylesheet" href="riskproof-shared.css">
+<script src="riskproof-data.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <div class="logo">Risk<span>Proof</span></div>
+      <div class="breadcrumb">Главная / Подросток / <strong style="color:var(--chocolate)" id="crumb-current">Персональный разбор</strong></div>
+    </div>
+  </header>
+
+  <div class="demo-bar">
+    <div class="container">
+      <span class="label">Универсальный шаблон — переключить продукт:</span>
+      <button class="demo-pill active" data-type="razbor">Персональный разбор</button>
+      <button class="demo-pill" data-type="session">Стратегическая сессия</button>
+      <button class="demo-pill" data-type="individual">Индивидуальное сопровождение</button>
+    </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="offer-hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <div class="hero-kicker">Направление · Отношения с подростком</div>
+        <span class="eyebrow" id="offer-kicker">Персональный разбор</span>
+        <h1 id="offer-title">Разбор ситуации</h1>
+        <p class="lede" id="offer-lede">Вы заполняете анкету, я изучаю её как риск-менеджер и даю вам
+           письменный документ с конкретными рекомендациями и видеопояснением.</p>
+      </div>
+      <div class="price-card">
+        <div class="entrance-standard">
+          <span class="eyebrow">Ценз на вход</span>
+          <h2>Готовность к системной работе</h2>
+          <p>Я не работаю с теми, кто ищет волшебную таблетку. Мои продукты — для людей, которые готовы честно посмотреть на свою ситуацию и действовать. Если вы ждёте, что кто-то решит проблему за вас, — я не тот специалист. Если вы готовы к системной работе и хотите получить протокол, а не «поговорили и полегчало», — добро пожаловать.</p>
+        </div>
+        <div class="price" id="offer-price">9 900 ₽</div>
+        <div class="price-note" id="offer-price-note">Разовая оплата</div>
+        <div class="price-includes" id="offer-includes"><!-- заполняется JS --></div>
+        <a class="btn btn-primary" href="#" id="offer-cta">Заказать разбор</a>
+        <div class="price-guarantee" id="offer-guarantee">Ответ в течение 48 часов после заполнения анкеты</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT'S INCLUDED ================= -->
+  <section class="includes-cream">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Что входит</span>
+        <h2 id="includes-heading">Из чего состоит разбор</h2>
+      </div>
+      <div class="includes-grid" id="includes-grid"><!-- заполняется JS --></div>
+    </div>
+  </section>
+
+  <!-- ================= STEPS ================= -->
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Как это проходит</span>
+        <h2>Три шага</h2>
+      </div>
+      <div class="steps" id="steps-grid"><!-- заполняется JS --></div>
+    </div>
+  </section>
+
+  <!-- ================= FIT ================= -->
+  <section class="includes-cream">
+    <div class="container fit-grid">
+      <div class="fit-col">
+        <h4>Подходит, если</h4>
+        <div id="fit-yes"><!-- заполняется JS --></div>
+      </div>
+      <div class="fit-col">
+        <h4>Возможно, не сейчас</h4>
+        <div id="fit-no"><!-- заполняется JS --></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section>
+    <div class="container">
+      <div class="final-cta">
+        <span class="eyebrow">Готовы начать?</span>
+        <h2 id="final-title">Закажите персональный разбор</h2>
+        <div class="price" id="final-price">9 900 ₽</div>
+        <a class="btn btn-primary" href="#" id="final-cta-btn">Заказать разбор</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-brand"><div class="logo">Risk<span>Proof</span></div><p>Система управления личными рисками · 2026</p></div>
+      <div class="footer-links"><a href="#">Telegram-канал</a><a href="#">Публичная оферта</a><a href="#">Политика обработки данных</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const check = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--terracotta)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>`;
+    const cross = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--chocolate-35)" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+
+    const offers = {
+      razbor:{
+        crumb:'Персональный разбор', kicker:'Персональный разбор', title:'Разбор ситуации',
+        lede:'Вы заполняете анкету, я изучаю её как риск-менеджер и даю вам письменный документ с конкретными рекомендациями и видеопояснением.',
+        price:'9 900 ₽', priceNote:'Разовая оплата', ctaText:'Заказать разбор',
+        guarantee:'Ответ в течение 48 часов после заполнения анкеты',
+        includesHeading:'Из чего состоит разбор',
+        includes:['Подробная анкета о вашей ситуации','Письменный документ с планом действий','Видеопояснение к результату','Ответ в течение 48 часов'],
+        cards:[
+          {n:'01', title:'Анкета', text:'12–13 вопросов о вашей ситуации — честно и подробно, как для себя.'},
+          {n:'02', title:'Анализ', text:'Я изучаю ответы как риск-менеджер, ищу ключевые точки риска.'},
+          {n:'03', title:'План + видео', text:'Вы получаете письменный план и короткое видео с пояснением.'}
+        ],
+        stepsHeading:'Три шага',
+        steps:[
+          {n:'01', title:'Оплата и доступ к анкете', text:'Сразу после оплаты открывается анкета — заполняете в своём темпе.'},
+          {n:'02', title:'Разбор ситуации', text:'В течение 48 часов Ольга готовит письменный план именно под вашу историю.'},
+          {n:'03', title:'Получение плана', text:'План и видео приходят на почту — можно возвращаться к ним в любой момент.'}
+        ],
+        fitYes:['Нужен результат, но пока не готовы к встречам','Ограничены в бюджете, чем на сессию','Хотите независимый взгляд на ситуацию со стороны'],
+        fitNo:['Готовы к активной совместной работе — тогда подойдёт сессия','Ситуация меняется быстро и нужна живая обратная связь']
+      },
+      session:{
+        crumb:'Стратегическая сессия', kicker:'Стратегическая сессия', title:'Карта рисков и план на месяц',
+        lede:'Мы встречаемся дважды. Я задаю вопросы, которые помогают вам услышать себя, а между встречами вы проверяете гипотезу в реальной жизни.',
+        price:'14 900 ₽', priceNote:'За весь формат', ctaText:'Записаться на сессию',
+        guarantee:'2 встречи по 60 минут, с интервалом 1–2 недели',
+        includesHeading:'Из чего состоит сессия',
+        includes:['Две встречи по 60 минут','Карта рисков по итогам первой встречи','Домашнее задание — проверка гипотезы','План на ближайший месяц'],
+        cards:[
+          {n:'01', title:'Встреча 1', text:'Разбираем текущую ситуацию, строим карту рисков, ставим гипотезу для проверки.'},
+          {n:'02', title:'Между встречами', text:'Вы тестируете одну из гипотез в реальной жизни — не в теории.'},
+          {n:'03', title:'Встреча 2', text:'Разбираем, что получилось, и формируем конкретный план на месяц.'}
+        ],
+        stepsHeading:'Как проходит',
+        steps:[
+          {n:'01', title:'Запись на сессию', text:'Пишете Ольге напрямую — согласовываете удобное время первой встречи.'},
+          {n:'02', title:'Первая встреча', text:'60 минут, карта рисков и гипотеза для проверки в реальной жизни.'},
+          {n:'03', title:'Вторая встреча', text:'Разбор результата гипотезы и итоговый план на ближайший месяц.'}
+        ],
+        fitYes:['Готовы к активной работе над ситуацией, а не разовой консультации','Нужна живая обратная связь, а не только письменный план','Хотите протестировать гипотезу с поддержкой'],
+        fitNo:['Пока не готовы к формату встреч — начните с разбора','Ограничены в бюджете — курс или тест дадут первые шаги бесплатно/недорого']
+      },
+      individual:{
+        crumb:'Индивидуальное сопровождение', kicker:'Индивидуальная работа', title:'Месяц тишины и ясности',
+        lede:'Четыре встречи и ежедневная поддержка в Telegram. Не разовая консультация, а месяц системной работы над ситуацией.',
+        price:'от 49 900 ₽', priceNote:'Точная сумма — на первой встрече', ctaText:'Написать Ольге',
+        guarantee:'Количество мест ограничено — не больше 3 в месяц',
+        includesHeading:'Из чего состоит сопровождение',
+        includes:['4 еженедельные встречи','Ежедневная поддержка в Telegram','Персональный план, живой и меняющийся','Приоритетный доступ к Ольге на месяц'],
+        cards:[
+          {n:'01', title:'Разбор ситуации', text:'На первой встрече договариваемся о точной стоимости и формате.'},
+          {n:'02', title:'Еженедельные встречи', text:'Четыре встречи — разбираем, что происходит, корректируем план.'},
+          {n:'03', title:'Ежедневная поддержка', text:'В течение месяца на связи в Telegram — не остаётесь один на один с ситуацией.'}
+        ],
+        stepsHeading:'Как проходит',
+        steps:[
+          {n:'01', title:'Написать Ольге', text:'Обсуждаем ситуацию и формат — подходим ли мы друг другу.'},
+          {n:'02', title:'Первая встреча', text:'Согласовываем точную стоимость и план на месяц.'},
+          {n:'03', title:'Месяц сопровождения', text:'4 встречи и ежедневная поддержка — реальный опыт жизни иначе.'}
+        ],
+        fitYes:['Готовы к глубокой, регулярной работе над ситуацией','Нужна поддержка каждый день, а не раз в месяц','Ситуация требует постоянной корректировки плана'],
+        fitNo:['Достаточно разового разбора или пары встреч — тогда сессия дешевле и быстрее','Пока не готовы к формату с ежедневным контактом']
+      }
+    };
+
+    function render(key){
+      const o = offers[key];
+      document.querySelectorAll('.demo-pill').forEach(p=>p.classList.toggle('active', p.dataset.type===key));
+      document.getElementById('crumb-current').textContent = o.crumb;
+      document.getElementById('offer-kicker').textContent = o.kicker;
+      document.getElementById('offer-title').textContent = o.title;
+      document.getElementById('offer-lede').textContent = o.lede;
+      document.getElementById('offer-price').textContent = o.price;
+      document.getElementById('offer-price-note').textContent = o.priceNote;
+      document.getElementById('offer-cta').textContent = o.ctaText;
+      document.getElementById('offer-guarantee').textContent = o.guarantee;
+      document.getElementById('offer-includes').innerHTML = o.includes.map(i=>`<div class="item">${check}${i}</div>`).join('');
+      document.getElementById('includes-heading').textContent = o.includesHeading;
+      document.getElementById('includes-grid').innerHTML = o.cards.map(c=>`
+        <div class="includes-card"><div class="includes-num">${c.n}</div><h4>${c.title}</h4><p>${c.text}</p></div>`).join('');
+      document.getElementById('steps-grid').innerHTML = o.steps.map(s=>`
+        <div class="step"><div class="step-num">${s.n}</div><h4>${s.title}</h4><p>${s.text}</p></div>`).join('');
+      document.getElementById('fit-yes').innerHTML = o.fitYes.map(f=>`<div class="fit-item">${check}<span>${f}</span></div>`).join('');
+      document.getElementById('fit-no').innerHTML = o.fitNo.map(f=>`<div class="fit-item">${cross}<span>${f}</span></div>`).join('');
+      document.getElementById('final-title').textContent = key==='individual' ? 'Обсудите формат с Ольгой' : ('Закажите: ' + o.title);
+      document.getElementById('final-price').textContent = o.price;
+      document.getElementById('final-cta-btn').textContent = o.ctaText;
+    }
+
+    document.querySelectorAll('.demo-pill').forEach(btn=>{
+      btn.addEventListener('click', ()=>render(btn.dataset.type));
+    });
+
+    render('razbor');
+  </script>
+
+<script src="riskproof-shared.js"></script>
+</body>
+</html>

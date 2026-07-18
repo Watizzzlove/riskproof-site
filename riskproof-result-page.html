@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Результат теста — RiskProof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --cream:        #FDF7F2;
+    --bg:           #FFFAF5;
+    --terracotta:   #B05A3E;
+    --terracotta-d: #904933;
+    --chocolate:    #2B1E1A;
+    --chocolate-60: rgba(43,30,26,0.6);
+    --chocolate-35: rgba(43,30,26,0.35);
+    --chocolate-12: rgba(43,30,26,0.12);
+    --green:        #2D6A4F;
+    --amber:        #B8863A;
+    --red:          #A6432F;
+    --line:         rgba(43,30,26,0.14);
+
+    --serif: 'Cormorant Garamond', serif;
+    --sans:  'Inter', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg); color:var(--chocolate); font-family:var(--sans);
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  img, svg{ display:block; max-width:100%; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible{ outline:2px solid var(--terracotta); outline-offset:3px; }
+  input{ font-family:inherit; }
+
+  .container{ max-width:1240px; margin:0 auto; padding:0 40px; }
+  section{ padding:100px 0; }
+
+  .eyebrow{
+    font-size:13px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--terracotta); display:inline-block; margin-bottom:20px;
+  }
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; color:var(--chocolate); letter-spacing:-0.01em; }
+  h2{ font-size:38px; line-height:1.18; }
+  p{ color:var(--chocolate-60); }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px; padding:16px 32px; border-radius:2px;
+    font-size:14px; font-weight:600; letter-spacing:0.02em; transition:all .25s ease; white-space:nowrap;
+  }
+  .btn-primary{ background:var(--terracotta); color:var(--cream); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-1px); }
+  .btn-ghost{ background:transparent; color:var(--chocolate); border:1px solid var(--chocolate-12); }
+  .btn-ghost:hover{ border-color:var(--terracotta); color:var(--terracotta); }
+
+  /* ================= HEADER ================= */
+  header{
+    position:sticky; top:0; z-index:50; background:rgba(255,250,245,0.86);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  }
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+  .logo{ font-family:var(--serif); font-size:22px; font-weight:600; }
+  .logo span{ color:var(--terracotta); }
+  .breadcrumb{ font-size:13px; color:var(--chocolate-35); }
+
+  /* ================= DEMO SWITCHER (служебный, не часть сайта) ================= */
+  .demo-bar{
+    background:var(--chocolate); color:var(--cream);
+    padding:14px 0; font-size:13px;
+  }
+  .demo-bar .container{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .demo-bar .label{ color:rgba(253,247,242,0.5); letter-spacing:0.04em; }
+  .demo-pill{
+    padding:8px 16px; border-radius:20px; border:1px solid rgba(253,247,242,0.25);
+    color:rgba(253,247,242,0.75); font-size:13px; font-weight:500; transition:all .2s ease;
+  }
+  .demo-pill.active{ background:var(--cream); color:var(--chocolate); border-color:var(--cream); }
+  .demo-pill:hover:not(.active){ border-color:var(--cream); color:var(--cream); }
+
+  /* ================= RESULT HERO ================= */
+  .result-hero{ padding:70px 0 90px; }
+  .result-grid{ display:grid; grid-template-columns:0.95fr 1.3fr; gap:80px; align-items:center; }
+
+  .zone-badge{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:9px 18px; border-radius:20px; font-size:13px; font-weight:600;
+    margin-bottom:24px;
+  }
+  .zone-dot{ width:8px; height:8px; border-radius:50%; }
+
+  .result-hero-text h1{ font-size:clamp(30px,3.4vw,42px); line-height:1.2; margin-bottom:18px; max-width:16ch; }
+  .result-hero-text .lede{ font-size:16.5px; line-height:1.7; max-width:44ch; margin-bottom:34px; }
+
+  .radar-card{
+    background:var(--cream); border:1px solid var(--line); border-radius:4px; padding:44px 40px;
+  }
+  .radar-card .card-label{
+    font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--chocolate-35); margin-bottom:32px;
+  }
+
+  /* ================= BAR CHART (разбивка по 4 параметрам — как просила Ольга) ================= */
+  .bar-list{ display:flex; flex-direction:column; gap:26px; }
+  .bar-row-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .bar-row-name{ font-size:14.5px; font-weight:500; color:var(--chocolate); }
+  .bar-row-meta{ display:flex; align-items:center; gap:10px; }
+  .bar-row-score{ font-family:var(--serif); font-size:17px; color:var(--chocolate-60); }
+  .bar-tag{
+    font-size:10.5px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; white-space:nowrap;
+  }
+  .bar-track{ height:8px; background:var(--chocolate-12); border-radius:5px; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:5px; transition:width .5s ease, background .3s ease; }
+
+  /* ================= PARAM DETAILS (больше не используется на этой странице) ================= */
+  .param-details{ display:none; }
+
+  /* ================= INTERPRETATION ================= */
+  .interpretation{ background:var(--cream); }
+  .interpretation-card{
+    max-width:760px; margin:0 auto; text-align:left;
+    background:var(--bg); border:1px solid var(--line); border-left:3px solid var(--terracotta);
+    border-radius:2px; padding:40px 44px;
+  }
+  .interpretation-card p{ font-size:16px; line-height:1.75; color:var(--chocolate-60); margin-bottom:22px; }
+  .interpretation-card p:last-child{ margin-bottom:0; }
+  .interpretation-cta{ margin-top:28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .interpretation-cta .price-note{ font-size:13px; color:var(--chocolate-35); }
+
+  /* ================= EMAIL CAPTURE ================= */
+  .email-capture{
+    display:grid; grid-template-columns:1fr 1fr; gap:0;
+    border:1px solid var(--line); border-radius:4px; overflow:hidden;
+  }
+  .email-capture-text{ padding:52px; }
+  .email-capture-text h3{ font-size:26px; margin-bottom:14px; }
+  .email-capture-text p{ font-size:15px; margin-bottom:0; }
+  .email-capture-form{ background:var(--cream); padding:52px; display:flex; flex-direction:column; justify-content:center; }
+  .form-row{ display:flex; gap:0; margin-bottom:14px; }
+  .form-row input{
+    flex-grow:1; padding:15px 18px; border:1px solid var(--chocolate-12); border-right:none;
+    border-radius:2px 0 0 2px; font-size:14.5px; background:var(--bg); color:var(--chocolate);
+  }
+  .form-row input::placeholder{ color:var(--chocolate-35); }
+  .form-row .btn-primary{ border-radius:0 2px 2px 0; padding:15px 26px; }
+  .form-note{ font-size:12.5px; color:var(--chocolate-35); }
+
+  /* ================= CROSS-SELL ================= */
+  .crosssell-head{ text-align:center; max-width:560px; margin:0 auto 44px; }
+  .crosssell-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .crosssell-card{
+    border:1px solid var(--line); border-radius:3px; padding:26px;
+    display:flex; align-items:center; gap:16px; transition:border-color .2s ease, transform .2s ease;
+  }
+  .crosssell-card:hover{ border-color:var(--terracotta); transform:translateY(-3px); }
+  .crosssell-icon{
+    width:38px; height:38px; border-radius:50%; border:1.5px solid var(--terracotta);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .crosssell-card h4{ font-family:var(--serif); font-size:17px; font-weight:500; margin-bottom:2px; }
+  .crosssell-card span{ font-size:12.5px; color:var(--chocolate-35); }
+
+  /* ================= FOOTER ================= */
+  footer{ border-top:1px solid var(--line); padding:56px 0; }
+  .footer-inner{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .footer-brand p{ font-size:13.5px; color:var(--chocolate-35); }
+  .footer-links{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .footer-links a{ font-size:13.5px; color:var(--chocolate-60); }
+  .footer-links a:hover{ color:var(--terracotta); }
+
+  @media (max-width:980px){
+    section{ padding:64px 0; }
+    .result-grid{ grid-template-columns:1fr; gap:44px; }
+    .email-capture{ grid-template-columns:1fr; }
+    .crosssell-grid{ grid-template-columns:1fr; }
+    .footer-inner{ flex-direction:column; gap:32px; }
+    .footer-links{ align-items:flex-start; }
+  }
+  @media (max-width:600px){
+    .container{ padding:0 22px; }
+    .param-detail-row{ grid-template-columns:1fr auto; row-gap:8px; }
+    .param-detail-score{ display:none; }
+  }
+
+</style>
+<link rel="stylesheet" href="riskproof-shared.css">
+<script src="riskproof-data.js"></script>
+</head>
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <div class="container header-inner">
+      <div class="logo">Risk<span>Proof</span></div>
+      <div class="breadcrumb">Главная / Тест / <strong style="color:var(--chocolate)">Результат</strong></div>
+    </div>
+  </header>
+
+  <!-- ================= DEMO SWITCHER ================= -->
+  <div class="demo-bar">
+    <div class="container">
+      <span class="label">Режим предпросмотра — переключить сценарий результата:</span>
+      <button class="demo-pill active" data-zone="green">Зелёная зона</button>
+      <button class="demo-pill" data-zone="yellow">Жёлтая зона</button>
+      <button class="demo-pill" data-zone="red1">1 параметр в риске</button>
+      <button class="demo-pill" data-zone="red2">2+ параметра в риске</button>
+    </div>
+  </div>
+
+  <!-- ================= RESULT HERO ================= -->
+  <section class="result-hero">
+    <div class="container result-grid">
+      <div class="radar-card">
+        <span class="card-label">Карта устойчивости · 4 параметра</span>
+        <div class="bar-list" id="bar-list">
+          <!-- заполняется JS -->
+        </div>
+      </div>
+      <div class="result-hero-text">
+        <span class="zone-badge" id="zone-badge" style="background:rgba(45,106,79,0.12); color:var(--green);">
+          <span class="zone-dot" style="background:var(--green);"></span>
+          <span id="zone-badge-text">Зона устойчивости</span>
+        </span>
+        <h1 id="result-title">Ваш контакт с подростком надёжно защищён</h1>
+        <p class="lede" id="result-lede">
+          Все четыре параметра — в зоне устойчивости. Вы — опора для своего ребёнка,
+          и риск потери связи минимален. Это результат, который стоит поддерживать.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTERPRETATION + CTA ================= -->
+  <section class="interpretation">
+    <div class="container">
+      <div class="interpretation-card">
+        <span class="eyebrow" style="margin-bottom:10px;">Что это значит</span>
+        <p id="interpretation-text">
+          Продолжайте в том же духе. Ваш ребёнок знает, что вы рядом — это редкий
+          и ценный результат. Загляните в Telegram-канал за короткими заметками,
+          которые помогут удержать эту устойчивость надолго.
+        </p>
+        <div class="interpretation-cta">
+          <a class="btn btn-primary" href="#" id="result-cta">Читать Telegram-канал</a>
+          <span class="price-note" id="result-cta-note">Бесплатно · короткие заметки каждый день</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EMAIL CAPTURE ================= -->
+  <section>
+    <div class="container">
+      <div class="email-capture">
+        <div class="email-capture-text">
+          <span class="eyebrow" style="margin-bottom:14px;">Сохранить результат</span>
+          <h3>Получить расшифровку на почту</h3>
+          <p>Пришлём подробный разбор каждого параметра и персональную
+             рекомендацию — чтобы вернуться к результату в спокойный момент.</p>
+        </div>
+        <div class="email-capture-form">
+          <div class="form-row">
+            <input type="email" placeholder="Ваш email">
+            <button class="btn btn-primary">Отправить</button>
+          </div>
+          <span class="form-note">Без спама. Только расшифровка результата и, если откликнется, — полезные материалы по теме.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CROSS-SELL ================= -->
+  <section>
+    <div class="container">
+      <div class="crosssell-head">
+        <span class="eyebrow">Хотите посмотреть на себя шире?</span>
+        <h2 style="font-size:28px;">Пройдите другой тест</h2>
+      </div>
+      <div class="crosssell-grid">
+        <a class="crosssell-card" href="#">
+          <div class="crosssell-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--terracotta)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div><h4>Внутренняя устойчивость</h4><span>Бесплатный тест · 3 минуты</span></div>
+        </a>
+        <a class="crosssell-card" href="#">
+          <div class="crosssell-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--terracotta)" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
+          </div>
+          <div><h4>Финансовая стабильность</h4><span>Бесплатный тест · 3 минуты</span></div>
+        </a>
+        <a class="crosssell-card" href="#">
+          <div class="crosssell-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--terracotta)" stroke-width="1.5"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>
+          </div>
+          <div><h4>Профориентация</h4><span>Бесплатный тест · 3 минуты</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo">Risk<span>Proof</span></div>
+        <p>Система управления личными рисками · 2026</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Telegram-канал</a>
+        <a href="#">Публичная оферта</a>
+        <a href="#">Политика обработки данных</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const scenarios = {
+      green: {
+        badgeBg: 'rgba(45,106,79,0.12)', color: 'var(--green)',
+        zoneLabel: 'Зона устойчивости',
+        title: 'Ваш контакт с подростком надёжно защищён',
+        lede: 'Все четыре параметра — в зоне устойчивости. Вы — опора для своего ребёнка, и риск потери связи минимален. Это результат, который стоит поддерживать.',
+        interpretation: 'Продолжайте в том же духе. Ваш ребёнок знает, что вы рядом — это редкий и ценный результат. Загляните в Telegram-канал за короткими заметками, которые помогут удержать эту устойчивость надолго.',
+        ctaText: 'Читать Telegram-канал', ctaNote: 'Бесплатно · короткие заметки каждый день',
+        points: [78, 82, 88, 80],
+        tags: ['Устойчивость','Устойчивость','Устойчивость','Устойчивость']
+      },
+      yellow: {
+        badgeBg: 'rgba(184,134,58,0.14)', color: 'var(--amber)',
+        zoneLabel: 'Зона внимания',
+        title: 'Контакт держится, но есть точки напряжения',
+        lede: 'Один-два параметра требуют внимания. Это как сигнализация в автомобиле: пока ничего не сломалось, но лучше проверить сейчас, а не позже.',
+        interpretation: 'Рекомендуем начать с курса «Система RiskProof: Восстановление контакта» — он поможет укрепить именно те опоры, которые сейчас в зоне внимания, пока ситуация не обострилась.',
+        ctaText: 'Посмотреть курс — 4 900 ₽', ctaNote: '5 уроков · планы действий · 2 бонуса',
+        points: [68, 45, 82, 65],
+        tags: ['Устойчивость','Внимание','Устойчивость','Внимание']
+      },
+      red1: {
+        badgeBg: 'rgba(166,67,47,0.12)', color: 'var(--red)',
+        zoneLabel: 'Зона риска',
+        title: 'Ваш контакт с подростком под угрозой',
+        lede: 'Один из параметров — в зоне риска. Вы, скорее всего, уже чувствуете это: скандалы, молчание, хлопанье дверьми. Это не приговор — это диагностика.',
+        interpretation: 'Рекомендуем персональный разбор ситуации: вы заполняете анкету, а мы даём письменный план и видеопояснение — конкретно под вашу историю, а не общие советы.',
+        ctaText: 'Заказать разбор — 9 900 ₽', ctaNote: 'Анкета · письменный план · видео',
+        points: [72, 38, 80, 55],
+        tags: ['Устойчивость','Риск','Устойчивость','Внимание']
+      },
+      red2: {
+        badgeBg: 'rgba(166,67,47,0.12)', color: 'var(--red)',
+        zoneLabel: '2+ параметра в риске',
+        title: 'Риск потери контакта высокий',
+        lede: 'Подросток, вероятно, уже ищет поддержку у ровесников, а не у вас. Это можно исправить — но потребуется более глубокая, совместная работа.',
+        interpretation: 'Для таких случаев рекомендуем стратегическую сессию: две встречи, на которых мы вместе выстроим карту рисков и план восстановления на ближайший месяц.',
+        ctaText: 'Записаться на сессию — 14 900 ₽', ctaNote: '2 встречи по 60 минут · карта рисков',
+        points: [35, 30, 75, 40],
+        tags: ['Риск','Риск','Устойчивость','Внимание']
+      }
+    };
+
+    const resultParams = new URLSearchParams(window.location.search);
+    const resultDirection = resultParams.get('direction') || 'podrostok';
+    const directionConfig = window.RiskProofData?.directions?.[resultDirection];
+    const paramNames = directionConfig?.parameters || ['Внимание','Обратная связь','Автономия','Буферизация'];
+    const tagColors = {
+      'Устойчивость': {bg:'rgba(45,106,79,0.12)', color:'var(--green)'},
+      'Внимание':     {bg:'rgba(184,134,58,0.14)', color:'var(--amber)'},
+      'Риск':         {bg:'rgba(166,67,47,0.12)',  color:'var(--red)'}
+    };
+
+    function renderScenario(key){
+      const s = {...scenarios[key], ...(directionConfig?.results?.[key] || {})};
+      const measuredPoints = (resultParams.get('scores') || '').split(',').map(Number);
+      if (key === resultParams.get('zone') && measuredPoints.length === 4 && measuredPoints.every(Number.isFinite)) {
+        s.points = measuredPoints;
+        s.tags = measuredPoints.map(value => value >= 70 ? 'Устойчивость' : value >= 55 ? 'Внимание' : 'Риск');
+      }
+      document.querySelectorAll('.demo-pill').forEach(p=>p.classList.toggle('active', p.dataset.zone===key));
+
+      document.getElementById('zone-badge').style.background = s.badgeBg;
+      document.getElementById('zone-badge').style.color = s.color;
+      document.querySelector('.zone-dot').style.background = s.color;
+      document.getElementById('zone-badge-text').textContent = s.zoneLabel;
+      document.getElementById('result-title').textContent = s.title;
+      document.getElementById('result-lede').textContent = s.lede;
+      document.getElementById('interpretation-text').textContent = s.interpretation;
+      document.getElementById('result-cta').textContent = s.ctaText;
+      document.getElementById('result-cta-note').textContent = s.ctaNote;
+
+      const wrap = document.getElementById('bar-list');
+      wrap.innerHTML = '';
+      paramNames.forEach((name,i)=>{
+        const percent = s.points[i];
+        const scoreOutOf15 = Math.round(percent/100*15);
+        const tag = s.tags[i];
+        const tc = tagColors[tag];
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `
+          <div class="bar-row-head">
+            <span class="bar-row-name">${name}</span>
+            <span class="bar-row-meta">
+              <span class="bar-row-score">${scoreOutOf15}/15</span>
+              <span class="bar-tag" style="background:${tc.bg}; color:${tc.color};">${tag}</span>
+            </span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${percent}%; background:${tc.color};"></div>
+          </div>`;
+        wrap.appendChild(row);
+      });
+    }
+
+    document.querySelectorAll('.demo-pill').forEach(btn=>{
+      btn.addEventListener('click', ()=>renderScenario(btn.dataset.zone));
+    });
+
+    renderScenario(resultParams.get('zone') || 'green');
+  </script>
+
+<script src="riskproof-shared.js"></script>
+</body>
+</html>
